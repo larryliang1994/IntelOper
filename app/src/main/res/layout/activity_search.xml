@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    tools:context="com.jiubai.inteloper.ui.activity.SearchActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
+        android:transitionName="appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.oshi.libsearchtoolbar.SearchAnimationToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:searchHint="搜索..."
+            app:title="设备列表" />
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appbar" />
+
+    <com.jiubai.inteloper.widget.IndexBar
+        android:id="@+id/indexbar"
+        android:layout_width="20dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/appbar" />
+
+    <TextView
+        android:id="@+id/tv_toast"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        android:alpha="0.8"
+        android:background="@drawable/toast_bg"
+        android:gravity="center"
+        android:textColor="#ffffff"
+        android:textSize="40sp"
+        android:visibility="gone" />
+
+</RelativeLayout>
