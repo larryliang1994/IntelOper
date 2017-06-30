@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
     defaultConfig {
         applicationId "com.jiubai.inteloper"
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -18,10 +18,25 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    signingConfigs {
+        debug {
+            storeFile file("D:\\Others\\EngineeringPractice\\IntelOper\\app\\android.keystore")
+            storePassword "fen3363816"
+            keyAlias "larryliang"
+            keyPassword "fen3363816"
+            v2SigningEnabled false
+        }
+        release {
+            storeFile file("D:\\Others\\EngineeringPractice\\IntelOper\\app\\android.keystore")
+            storePassword "fen3363816"
+            keyAlias "larryliang"
+            keyPassword "fen3363816"
+            v2SigningEnabled false
+        }
+    }
 }
 
 allprojects {
-
     repositories {
         mavenCentral()
     }
@@ -34,6 +49,10 @@ dependencies {
     })
     compile files('src/main/jniLibs/Volley.jar')
     compile files('src/main/jniLibs/pinyin4j.jar')
+    compile files('src/main/jniLibs/javax.servlet-api-3.1.0.jar')
+    compile files('src/main/jniLibs/javax.websocket-api-1.1.jar')
+    compile files('src/main/jniLibs/hprose_client_for_java_7.jar')
+    compile files('src/main/jniLibs/hprose_for_java_7.jar')
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'

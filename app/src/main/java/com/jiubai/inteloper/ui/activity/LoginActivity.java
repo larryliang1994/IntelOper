@@ -3,15 +3,15 @@ package com.jiubai.inteloper.ui.activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.AppBarLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Pair;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.jiubai.inteloper.EntryActivity;
 import com.jiubai.inteloper.R;
 import com.jiubai.inteloper.common.UtilBox;
 import com.jiubai.inteloper.config.Config;
@@ -24,7 +24,6 @@ import com.jiubai.inteloper.widget.RippleView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * Created by Larry Liang on 26/04/2017.
@@ -43,6 +42,9 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
 
     @Bind(R.id.edt_password)
     EditText mPasswordEditText;
+
+    @Bind(R.id.toolbar)
+    Toolbar mToolbar;
 
     private ILoginPresenter mLoginPresenter;
     private ProgressDialog mProgressDialog;
@@ -68,6 +70,19 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("连接中...");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_login, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        startActivity(new Intent(this, NetworkTestActivity.class));
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -101,11 +116,10 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
 
     @Override
     public void onLoginResult(boolean result, String info) {
-        mProgressDialog.hide();
-
         if (result) {
             new DevicePresenterImpl(this).GetDeviceList();
         } else {
+            mProgressDialog.hide();
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
         }
     }
@@ -116,9 +130,12 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
             initRequestNum ++;
 
             if (initRequestNum == requestNum) {
+                mProgressDialog.hide();
+
                 entry();
             }
         } else {
+            mProgressDialog.hide();
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
         }
     }

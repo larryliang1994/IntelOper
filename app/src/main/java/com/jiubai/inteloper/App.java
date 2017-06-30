@@ -2,24 +2,17 @@ package com.jiubai.inteloper;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.jiubai.inteloper.config.Config;
-import com.jiubai.inteloper.net.VolleyUtil;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.utils.L;
-
-import java.util.Calendar;
 
 /**
  * 程序入口
@@ -39,9 +32,6 @@ public class App extends Application {
     public void initService() {
         // 启动崩溃统计
         //CrashReport.initCrashReport(getApplicationContext(), "900016169", false);
-
-        // 初始化请求队列
-        VolleyUtil.initRequestQueue(getApplicationContext());
 
         // 初始化网络状态
         getNetworkState();
