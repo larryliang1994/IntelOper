@@ -9,6 +9,7 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ import com.jiubai.inteloper.widget.RippleView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by Larry Liang on 26/04/2017.
@@ -83,6 +85,15 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
     public boolean onOptionsItemSelected(MenuItem item) {
         startActivity(new Intent(this, NetworkTestActivity.class));
         return super.onOptionsItemSelected(item);
+    }
+
+    @OnClick({R.id.textView_network_test})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.textView_network_test:
+                startActivity(new Intent(this, NetworkTestActivity.class));
+                break;
+        }
     }
 
     @Override

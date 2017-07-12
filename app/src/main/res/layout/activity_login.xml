@@ -120,6 +120,26 @@
                     android:textColor="#ffffff"
                     android:textSize="18sp" />
             </com.jiubai.inteloper.widget.RippleView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="12dp">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/textView_network_test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="网络测试"
+                    android:textColor="@color/colorPrimary"/>
+
+            </LinearLayout>
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
