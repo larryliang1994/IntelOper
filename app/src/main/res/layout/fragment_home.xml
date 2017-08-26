@@ -8,154 +8,178 @@
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
-        android:transitionName="appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:transitionName="appbar"
+        app:elevation="0dp">
 
-            <FrameLayout
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary" />
 
-                <ImageView
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorPrimary" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:gravity="center"
+                    android:text="低压监控管理平台"
+                    android:textColor="#ffffff"
+                    android:textSize="28sp" />
+
+                <LinearLayout
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right|center_vertical"
+                        android:text="运行"
+                        android:textColor="#ffffff"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="："
+                        android:textColor="#ffffff"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textView_running"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="left|center_vertical"
+                        android:text="XXXX"
+                        android:textColor="#ffffff"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="36dp"
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/appBarSize"
-                        android:layout_marginTop="25dp"
-                        android:gravity="center"
-                        android:text="低压监控管理平台"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="right|center_vertical"
+                        android:text="故障"
                         android:textColor="#ffffff"
-                        android:textSize="20sp" />
+                        android:textSize="18sp" />
 
-                    <LinearLayout
-                        android:id="@+id/layout_search"
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginLeft="12dp"
-                        android:layout_marginRight="12dp"
-                        android:background="@drawable/round_searchbox"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="10dp"
-                            app:srcCompat="@drawable/search" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="5dp"
-                            android:text="搜索"
-                            android:textColor="#ffffff"
-                            android:textSize="16sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="10dp"
-                        android:orientation="horizontal">
+                        android:gravity="center"
+                        android:text="："
+                        android:textColor="#ffffff"
+                        android:textSize="18sp" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="right|center_vertical"
-                            android:text="运行"
-                            android:textColor="#ffffff"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="："
-                            android:textColor="#ffffff"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/textView_running"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="left|center_vertical"
-                            android:text="XXXX"
-                            android:textColor="#ffffff"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/textView_fault"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="right|center_vertical"
-                            android:text="故障"
-                            android:textColor="#ffffff"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:text="："
-                            android:textColor="#ffffff"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/textView_fault"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="left|center_vertical"
-                            android:text="5"
-                            android:textColor="#ffffff"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                    <Button
-                        android:id="@+id/button_check"
-                        android:layout_width="140dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="16dp"
-                        android:background="@drawable/round_button_empty"
-                        android:text="查看"
-                        android:textSize="16sp" />
+                        android:layout_weight="1"
+                        android:gravity="left|center_vertical"
+                        android:text="0"
+                        android:textColor="#ffffff"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
-            </FrameLayout>
+
+            </LinearLayout>
+        </FrameLayout>
 
     </android.support.design.widget.AppBarLayout>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/divider" />
-
     <com.jiubai.inteloper.widget.RippleView
         android:id="@+id/ripple_monitor"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="#ffffff"
+        app:rv_rippleDuration="200"
+        android:layout_marginTop="16dp"
+        app:rv_type="rectangle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="@drawable/round_image_blue"
+                android:padding="10dp"
+                app:srcCompat="@drawable/monitor" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="实时监视"
+                android:textColor="@color/primaryText"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/right" />
+        </LinearLayout>
+    </com.jiubai.inteloper.widget.RippleView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="0.5dp"
+            android:background="#ffffff" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0.5dp"
+            android:layout_weight="1"
+            android:background="@color/divider" />
+
+    </LinearLayout>
+
+    <com.jiubai.inteloper.widget.RippleView
+        android:id="@+id/ripple_alarm_history"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="#ffffff"
@@ -173,15 +197,15 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/round_image_blue"
+                android:background="@drawable/round_image_alarm_history"
                 android:padding="10dp"
-                app:srcCompat="@drawable/setting" />
+                app:srcCompat="@drawable/alarm_history" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="设备监视"
+                android:text="历史告警"
                 android:textColor="@color/primaryText"
                 android:textSize="18sp" />
 
@@ -236,9 +260,9 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/round_image_cyan"
+                android:background="@drawable/round_image_definition"
                 android:padding="14dp"
-                app:srcCompat="@drawable/border_color" />
+                app:srcCompat="@drawable/definition" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -261,10 +285,5 @@
                 android:src="@drawable/right" />
         </LinearLayout>
     </com.jiubai.inteloper.widget.RippleView>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/divider" />
 
 </LinearLayout>

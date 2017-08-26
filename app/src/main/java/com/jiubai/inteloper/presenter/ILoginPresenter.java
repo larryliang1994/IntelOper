@@ -6,5 +6,5 @@ package com.jiubai.inteloper.presenter;
  * LoginPresenter接口
  */
 public interface ILoginPresenter {
-    void doLogin(String phoneNum, String verifyCode);
+    void doLogin(String userName, String password);
 }

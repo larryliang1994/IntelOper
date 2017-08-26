@@ -6,11 +6,6 @@
     android:background="#DDDDDD"
     android:orientation="vertical">
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="0.5dp"
-        android:background="@color/divider" />
-
     <TextView
         android:id="@+id/tv_index"
         android:layout_width="wrap_content"
@@ -18,10 +13,5 @@
         android:layout_marginLeft="19dp"
         android:gravity="center"
         android:textSize="14sp" />
-
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="0.5dp"
-        android:background="@color/divider" />
 
 </LinearLayout>

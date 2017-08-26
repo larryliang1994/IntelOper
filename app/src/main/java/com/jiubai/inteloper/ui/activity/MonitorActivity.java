@@ -1,24 +1,24 @@
 package com.jiubai.inteloper.ui.activity;
 
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jiubai.inteloper.R;
+import com.jiubai.inteloper.common.UtilBox;
+import com.jiubai.inteloper.ui.fragment.DeviceInfoFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class DeviceMonitorActivity extends AppCompatActivity {
+public class MonitorActivity extends BaseActivity {
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -31,12 +31,16 @@ public class DeviceMonitorActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
+    private String deviceName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_device_monitor);
+        setContentView(R.layout.activity_monitor);
 
         ButterKnife.bind(this);
+
+        deviceName = getIntent().getStringExtra("deviceName");
 
         initView();
     }
@@ -46,13 +50,20 @@ public class DeviceMonitorActivity extends AppCompatActivity {
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeviceMonitorActivity.this.finish();
+                MonitorActivity.this.onBackPressed();
             }
         });
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        UtilBox.returnActivity(this);
     }
 
     /**
@@ -83,7 +94,7 @@ public class DeviceMonitorActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_device_info, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_device_wire, container, false);
             return rootView;
         }
     }
@@ -100,7 +111,16 @@ public class DeviceMonitorActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return PlaceholderFragment.newInstance(position + 1);
+            if (position == 0) {
+                DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("deviceName", deviceName);
+                deviceInfoFragment.setArguments(bundle);
+
+                return deviceInfoFragment;
+            } else {
+                return PlaceholderFragment.newInstance(position + 1);
+            }
         }
 
         @Override

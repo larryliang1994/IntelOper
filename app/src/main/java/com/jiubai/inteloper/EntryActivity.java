@@ -1,41 +1,26 @@
 package com.jiubai.inteloper;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.AppBarLayout;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.jiubai.inteloper.bean.Device;
 import com.jiubai.inteloper.common.UtilBox;
 import com.jiubai.inteloper.config.Config;
-import com.jiubai.inteloper.presenter.DevicePresenterImpl;
 import com.jiubai.inteloper.ui.activity.BaseActivity;
 import com.jiubai.inteloper.ui.activity.LoginActivity;
 import com.jiubai.inteloper.ui.activity.MainActivity;
-import com.jiubai.inteloper.ui.iview.IDeviceView;
-import com.umeng.analytics.MobclickAgent;
-
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class EntryActivity extends BaseActivity implements IDeviceView {
+public class EntryActivity extends BaseActivity {
 
     @Bind(R.id.appbar)
     ImageView mAppbarImageView;
@@ -46,7 +31,7 @@ public class EntryActivity extends BaseActivity implements IDeviceView {
     private ProgressDialog mDialog;
     private Class mLauncherActivity;
 
-    private final int requestNum = 1;
+    private final int requestNum = 0;
     private int initRequestNum = 0;
 
     @Override
@@ -85,14 +70,14 @@ public class EntryActivity extends BaseActivity implements IDeviceView {
                 return;
             }
 
-            new DevicePresenterImpl(EntryActivity.this).GetDeviceList();
+            entry();
         }
     }
 
     private void entry() {
         mDialog.dismiss();
 
-        UtilBox.startActivity(this, new Intent(EntryActivity.this, mLauncherActivity), Pair.create(mAppbarImageView, "appbar"));
+        UtilBox.startActivity(this, new Intent(EntryActivity.this, mLauncherActivity), true);
 
         finish();
     }
@@ -108,21 +93,6 @@ public class EntryActivity extends BaseActivity implements IDeviceView {
     @OnClick(R.id.btn_reconnect)
     public void onClick(View v) {
         initData();
-    }
-
-    @Override
-    public void onGetDeviceListResult(boolean result, String info) {
-        if (result) {
-            initRequestNum ++;
-
-            if (initRequestNum == requestNum) {
-                entry();
-            }
-        } else {
-            Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
-
-            showReconnectDialog();
-        }
     }
 
     private void showReconnectDialog() {

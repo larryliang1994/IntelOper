@@ -7,6 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.jiubai.inteloper.config.Config;
+import com.jiubai.inteloper.config.Constants;
+import com.jiubai.inteloper.net.VolleyUtil;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -24,7 +26,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        //sp = getApplicationContext().getSharedPreferences(Constants.SP_FILENAME, Context.MODE_PRIVATE);
+        sp = getApplicationContext().getSharedPreferences(Constants.SP_FILENAME, Context.MODE_PRIVATE);
 
         initService();
     }
@@ -41,6 +43,8 @@ public class App extends Application {
 
         // 初始化图片加载框架
         initImageLoader();
+
+        VolleyUtil.initRequestQueue(this);
     }
 
     private void loadStorageData() {

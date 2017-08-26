@@ -1,30 +1,23 @@
 package com.jiubai.inteloper.ui.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.jiubai.inteloper.R;
+import com.jiubai.inteloper.manager.AlarmManager;
 import com.jiubai.inteloper.ui.fragment.HomeFragment;
-import com.jiubai.inteloper.ui.fragment.SearchFragment;
 import com.jiubai.inteloper.ui.fragment.UserInfoFragment;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -35,10 +28,10 @@ public class MainActivity extends BaseActivity {
     ViewPager mViewPager;
 
     @Bind(R.id.navigation)
-    BottomNavigationView mNavigation;
+    BottomNavigationViewEx mNavigation;
 
     private HomeFragment mHomeFragment = new HomeFragment();
-    private SearchFragment mSearchFragment = new SearchFragment();
+    //private SearchFragment mSearchFragment = new SearchFragment();
     private UserInfoFragment mUserInfoFragment = new UserInfoFragment();
 
     private ArrayList<Fragment> mFragments;
@@ -51,10 +44,21 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         initView();
+
+        initAlarm();
+    }
+
+    private void initAlarm() {
+        // 开始监听实时告警
+        AlarmManager alarmManager = AlarmManager.getInstance();
+        alarmManager.startListen();
     }
 
     private void initView() {
         mNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mNavigation.enableAnimation(false);
+        mNavigation.enableItemShiftingMode(false);
+        mNavigation.enableShiftingMode(false);
 
         initViewPager();
     }
@@ -63,11 +67,12 @@ public class MainActivity extends BaseActivity {
         mFragments = new ArrayList<>();
 
         mFragments.add(mHomeFragment);
-        mFragments.add(mSearchFragment);
+        //mFragments.add(mSearchFragment);
         mFragments.add(mUserInfoFragment);
 
         mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(), mFragments));
 
+        mViewPager.setOffscreenPageLimit(10);
         mViewPager.setCurrentItem(0);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -79,8 +84,8 @@ public class MainActivity extends BaseActivity {
             public void onPageSelected(int position) {
                 switch (position) {
                     case 0: mNavigation.setSelectedItemId(R.id.navigation_home);    break;
-                    case 1: mNavigation.setSelectedItemId(R.id.navigation_search);    break;
-                    case 2: mNavigation.setSelectedItemId(R.id.navigation_userinfo);    break;
+                    //case 1: mNavigation.setSelectedItemId(R.id.navigation_search);    break;
+                    case 1: mNavigation.setSelectedItemId(R.id.navigation_userinfo);    break;
                 }
                 mNavigation.setSelectedItemId(position);
             }
@@ -101,17 +106,35 @@ public class MainActivity extends BaseActivity {
                 case R.id.navigation_home:
                     mViewPager.setCurrentItem(0, true);
                     return true;
-                case R.id.navigation_search:
-                    mViewPager.setCurrentItem(1, true);
-                    return true;
+//                case R.id.navigation_search:
+//                    mViewPager.setCurrentItem(1, true);
+//                    return true;
                 case R.id.navigation_userinfo:
-                    mViewPager.setCurrentItem(2, true);
+                    mViewPager.setCurrentItem(1, true);
                     return true;
             }
             return false;
         }
 
     };
+
+    private long exitTime = 0;
+
+    @Override
+    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK
+                && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 

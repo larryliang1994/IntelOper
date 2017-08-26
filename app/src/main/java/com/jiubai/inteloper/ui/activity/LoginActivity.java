@@ -2,10 +2,10 @@ package com.jiubai.inteloper.ui.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.Toolbar;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,13 +13,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.jiubai.inteloper.App;
 import com.jiubai.inteloper.R;
 import com.jiubai.inteloper.common.UtilBox;
 import com.jiubai.inteloper.config.Config;
-import com.jiubai.inteloper.presenter.DevicePresenterImpl;
 import com.jiubai.inteloper.presenter.ILoginPresenter;
 import com.jiubai.inteloper.presenter.LoginPresenterImpl;
-import com.jiubai.inteloper.ui.iview.IDeviceView;
 import com.jiubai.inteloper.ui.iview.ILoginView;
 import com.jiubai.inteloper.widget.RippleView;
 
@@ -31,7 +30,7 @@ import butterknife.OnClick;
  * Created by Larry Liang on 26/04/2017.
  */
 
-public class LoginActivity extends BaseActivity implements ILoginView, RippleView.OnRippleCompleteListener, IDeviceView {
+public class LoginActivity extends BaseActivity implements ILoginView, RippleView.OnRippleCompleteListener {
 
     @Bind(R.id.appbar)
     AppBarLayout mAppbarLayout;
@@ -51,7 +50,7 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
     private ILoginPresenter mLoginPresenter;
     private ProgressDialog mProgressDialog;
 
-    private final int requestNum = 1;
+    private final int requestNum = 0;
     private int initRequestNum = 0;
 
     @Override
@@ -68,10 +67,15 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
     private void initView() {
         mLoginRipple.setOnRippleCompleteListener(this);
 
-        mLoginPresenter = new LoginPresenterImpl(this);
+        mLoginPresenter = new LoginPresenterImpl(this, this);
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("连接中...");
+
+        final SharedPreferences sp = App.sp;
+
+        mAccountEditText.setText(sp.getString("account", ""));
+        mPasswordEditText.setText(sp.getString("password", ""));
     }
 
     @Override
@@ -128,32 +132,23 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
     @Override
     public void onLoginResult(boolean result, String info) {
         if (result) {
-            new DevicePresenterImpl(this).GetDeviceList();
+            mProgressDialog.dismiss();
+
+            SharedPreferences.Editor editor = App.sp.edit();
+            editor.putString("account", mAccountEditText.getText().toString());
+            editor.putString("password", mPasswordEditText.getText().toString());
+            editor.apply();
+
+            entry();
         } else {
-            mProgressDialog.hide();
-            Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onGetDeviceListResult(boolean result, String info) {
-        if (result) {
-            initRequestNum ++;
-
-            if (initRequestNum == requestNum) {
-                mProgressDialog.hide();
-
-                entry();
-            }
-        } else {
-            mProgressDialog.hide();
+            mProgressDialog.dismiss();
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void entry() {
         Intent intent = new Intent(this, MainActivity.class);
-        UtilBox.startActivity(this, intent, Pair.create(mAppbarLayout, "appbar"));
+        UtilBox.startActivity(this, intent, true);
         finish();
     }
 }

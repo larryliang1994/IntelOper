@@ -6,8 +6,8 @@
     <color name="divider">#55767676</color>
     <color name="rippleColor">#bdbdbd</color>
 
-    <color name="primaryText">#333333</color>
-    <color name="mainText">#666666</color>
-    <color name="lightText">#999999</color>
+    <color name="primaryText">#101010</color>
+    <color name="mainText">#2C2C2C</color>
+    <color name="lightText">#909090</color>
     <color name="background">#eeeeee</color>
 </resources>

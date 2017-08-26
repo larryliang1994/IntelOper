@@ -6,11 +6,6 @@
     android:background="@color/background"
     android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="25dp"
-        android:background="@color/colorPrimary"/>
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="@dimen/appBarSize"
@@ -20,229 +15,112 @@
         android:textColor="#ffffff"
         android:textSize="20sp" />
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/divider" />
-
-    <com.jiubai.inteloper.widget.RippleView
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#ffffff"
-        app:rv_rippleDuration="200"
-        app:rv_type="rectangle">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                app:srcCompat="@drawable/phone_android" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="用户中心"
-                android:textColor="@color/primaryText"
-                android:textSize="16sp" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/right" />
-
-        </LinearLayout>
-    </com.jiubai.inteloper.widget.RippleView>
-
     <LinearLayout
+        android:id="@+id/layout_about"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/ripple"
+        android:clickable="true"
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="0.5dp"
-            android:background="#ffffff" />
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:srcCompat="@drawable/people_green" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="关于我们"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
 
         <ImageView
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="0.5dp"
-            android:background="@color/divider" />
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/right" />
 
     </LinearLayout>
 
-    <com.jiubai.inteloper.widget.RippleView
+    <LinearLayout
+        android:id="@+id/layout_feedback"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#ffffff"
-        app:rv_rippleDuration="200"
-        app:rv_type="rectangle">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                app:srcCompat="@drawable/settings_blue" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="系统设置"
-                android:textColor="@color/primaryText"
-                android:textSize="16sp" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/right" />
-
-        </LinearLayout>
-    </com.jiubai.inteloper.widget.RippleView>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/divider" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:background="@color/divider" />
+        android:background="@drawable/ripple"
+        android:clickable="true"
+        android:orientation="horizontal">
 
-    <com.jiubai.inteloper.widget.RippleView
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:padding="3dp"
+            android:tint="@color/colorPrimary"
+            app:srcCompat="@drawable/border_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="意见反馈"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/right" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_logout"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#ffffff"
-        app:rv_rippleDuration="200"
-        app:rv_type="rectangle">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                app:srcCompat="@drawable/people_green" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="关于我们"
-                android:textColor="@color/primaryText"
-                android:textSize="16sp" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/right" />
-
-        </LinearLayout>
-    </com.jiubai.inteloper.widget.RippleView>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/divider" />
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:background="@color/divider" />
+        android:background="@drawable/ripple"
+        android:clickable="true"
+        android:orientation="horizontal">
 
-    <com.jiubai.inteloper.widget.RippleView
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#ffffff"
-        app:rv_rippleDuration="200"
-        app:rv_type="rectangle">
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            app:srcCompat="@drawable/power_pink" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="退出登录"
+            android:textColor="@color/primaryText"
+            android:textSize="16sp" />
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                app:srcCompat="@drawable/power_pink" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="退出登录"
-                android:textColor="@color/primaryText"
-                android:textSize="16sp" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginRight="10dp"
-                android:src="@drawable/right" />
-
-        </LinearLayout>
-    </com.jiubai.inteloper.widget.RippleView>
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/divider" />
+    </LinearLayout>
 
 </LinearLayout>

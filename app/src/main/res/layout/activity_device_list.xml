@@ -6,13 +6,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background"
-    tools:context="com.jiubai.inteloper.ui.activity.SearchActivity">
+    tools:context="com.jiubai.inteloper.ui.activity.DeviceListActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:transitionName="appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
 
         <com.oshi.libsearchtoolbar.SearchAnimationToolbar
             android:id="@+id/toolbar"
@@ -22,18 +23,24 @@
             app:title="设备列表" />
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <Button
+        android:id="@+id/button_addDevice"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/appbar" />
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:text="+添加新设备"
+        android:textSize="18sp"
+        android:textColor="#ffffff" />
 
     <com.jiubai.inteloper.widget.IndexBar
         android:id="@+id/indexbar"
         android:layout_width="20dp"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/appbar" />
+        android:layout_below="@id/appbar"
+        android:elevation="10dp"
+        app:elevation="10dp"/>
 
     <TextView
         android:id="@+id/tv_toast"
@@ -46,5 +53,13 @@
         android:textColor="#ffffff"
         android:textSize="40sp"
         android:visibility="gone" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appbar"
+        android:layout_above="@id/button_addDevice"/>
+
 
 </RelativeLayout>

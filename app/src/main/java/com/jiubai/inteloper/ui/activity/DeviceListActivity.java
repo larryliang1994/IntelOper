@@ -8,33 +8,27 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jiubai.inteloper.R;
 import com.jiubai.inteloper.bean.Device;
 import com.jiubai.inteloper.common.UtilBox;
-import com.jiubai.inteloper.config.Config;
+import com.jiubai.inteloper.presenter.DevicePresenterImpl;
+import com.jiubai.inteloper.ui.iview.IDeviceView;
 import com.jiubai.inteloper.widget.IndexBar;
 import com.jiubai.inteloper.widget.RippleView;
 import com.oshi.libsearchtoolbar.SearchAnimationToolbar;
 
-import net.sourceforge.pinyin4j.PinyinHelper;
-import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
-import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +36,7 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class SearchActivity extends BaseActivity {
+public class DeviceListActivity extends BaseActivity implements IDeviceView {
 
     @Bind(R.id.appbar)
     AppBarLayout mAppbarLayout;
@@ -53,17 +47,27 @@ public class SearchActivity extends BaseActivity {
     @Bind(R.id.toolbar)
     SearchAnimationToolbar mToolbar;
 
+    @Bind(R.id.indexbar)
+    IndexBar mIndexBar;
+
+    @Bind(R.id.button_addDevice)
+    Button mAddDeviceButton;
+
     private MainAdapter mAdapter;
     private List<Device> mList = new ArrayList<>();
-    private IndexBar mIndexBar;
     private LinearLayoutManager layoutManager;
     private String filter = "";
     private String source = "";
 
+    private List<Device> deviceList = new ArrayList<>();
+
+    private final int REQUEST_CODE_NEW_DEVICE = 0;
+    private final int REQUEST_CODE_EDIT_DEVICE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+        setContentView(R.layout.activity_device_list);
 
         source = getIntent().getStringExtra("source");
 
@@ -71,7 +75,9 @@ public class SearchActivity extends BaseActivity {
 
         initView();
 
-        initData();
+        new DevicePresenterImpl(this, this).getDeviceList();
+
+        UtilBox.showLoading(this);
     }
 
     private void initView() {
@@ -79,6 +85,20 @@ public class SearchActivity extends BaseActivity {
         mRecyclerView.setLayoutManager(layoutManager);
         mAdapter = new MainAdapter(this, mList);
         mRecyclerView.setAdapter(mAdapter);
+
+        if (source.equals("monitor")) {
+            mAddDeviceButton.setVisibility(View.GONE);
+        } else if (source.equals("definition")) {
+            mAddDeviceButton.setVisibility(View.VISIBLE);
+
+            mAddDeviceButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(DeviceListActivity.this, DefinitionActivity.class);
+                    DeviceListActivity.this.startActivityForResult(intent, REQUEST_CODE_NEW_DEVICE);
+                }
+            });
+        }
 
         mToolbar.setSupportActionBar(this);
         mToolbar.setSearchTextColor(Color.BLACK);
@@ -106,8 +126,35 @@ public class SearchActivity extends BaseActivity {
                 UtilBox.toggleSoftInput(mToolbar, false);
             }
         });
+    }
 
-        initIndexBar();
+    @Override
+    public void onGetDeviceListResult(boolean result, String info, Object extras) {
+        UtilBox.dismissLoading();
+
+        if (result) {
+            deviceList = (List<Device>) extras;
+
+            initIndexBar();
+            initData();
+        } else {
+            Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onGetDeviceInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onEditDeviceInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onAddNewDeviceResult(boolean result, String info, Object extras) {
+
     }
 
     @Override
@@ -146,7 +193,6 @@ public class SearchActivity extends BaseActivity {
      * 初始化快速索引栏
      */
     private void initIndexBar() {
-        mIndexBar = (IndexBar) findViewById(R.id.indexbar);
         TextView tvToast = (TextView) findViewById(R.id.tv_toast);
         mIndexBar.setSelectedIndexTextView(tvToast);
         mIndexBar.setOnIndexChangedListener(new IndexBar.OnIndexChangedListener() {
@@ -179,8 +225,6 @@ public class SearchActivity extends BaseActivity {
         }
         mIndexBar.setIndexs(letters);
         mAdapter.notifyDataSetChanged();
-
-
     }
 
     /**
@@ -233,8 +277,8 @@ public class SearchActivity extends BaseActivity {
     private List<Device> getData() {
         List<Device> filterList = new ArrayList<>();
 
-        for (int i = 0; i < Config.Devices.size(); i++) {
-            Device device = Config.Devices.get(i);
+        for (int i = 0; i < deviceList.size(); i++) {
+            Device device = deviceList.get(i);
 
             if (TextUtils.isEmpty(filter) || device.getName().contains(filter)) {
                 filterList.add(device);
@@ -242,6 +286,22 @@ public class SearchActivity extends BaseActivity {
         }
 
         return filterList;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_CODE_NEW_DEVICE:
+            case REQUEST_CODE_EDIT_DEVICE:
+                if (resultCode == RESULT_OK) {
+                    new DevicePresenterImpl(this, this).getDeviceList();
+
+                    UtilBox.showLoading(this);
+                }
+                break;
+        }
     }
 
     class MainAdapter extends RecyclerView.Adapter {
@@ -275,7 +335,7 @@ public class SearchActivity extends BaseActivity {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             if (getItemViewType(position) == VIEW_INDEX) {
                 ((IndexViewHolder) holder).tvIndex.setText(mList.get(position).getFirstWord());
             } else {
@@ -291,9 +351,13 @@ public class SearchActivity extends BaseActivity {
                     @Override
                     public void onComplete(RippleView rippleView) {
                         if (source.equals("monitor")) {
-                            UtilBox.startActivity(SearchActivity.this, new Intent(SearchActivity.this, DeviceMonitorActivity.class), Pair.create(mAppbarLayout, "appbar"));
+                            Intent intent = new Intent(DeviceListActivity.this, MonitorActivity.class);
+                            intent.putExtra("deviceName", mList.get(position).getName());
+                            UtilBox.startActivity(DeviceListActivity.this, intent, false);
                         } else if (source.equals("definition")) {
-                            UtilBox.startActivity(SearchActivity.this, new Intent(SearchActivity.this, DeviceDefinitionActivity.class));
+                            Intent intent = new Intent(DeviceListActivity.this, DefinitionActivity.class);
+                            intent.putExtra("deviceName", mList.get(position).getName());
+                            DeviceListActivity.this.startActivityForResult(intent, REQUEST_CODE_EDIT_DEVICE);
                         }
 
                         mToolbar.onBackPressed();

@@ -46,6 +46,8 @@ public class IndexBar extends View {
 
     private Paint mPaint;
 
+    public static int offset = 0;
+
     public IndexBar(Context context) {
         super(context);
         init();
@@ -70,7 +72,7 @@ public class IndexBar extends View {
                 { "#", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"
                         , "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 
-        mMarginTop = (mHeight - mCellHeight * this.indexs.length) / 2;
+        mMarginTop = (mHeight - offset - mCellHeight * this.indexs.length) / 2;
         //mMarginTop = 0;
         invalidate();
     }
@@ -119,8 +121,8 @@ public class IndexBar extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         mWidth = getMeasuredWidth();
         mHeight = getMeasuredHeight();
-        mCellHeight = (mHeight * 1f / 27);    //26个字母加上“#”
-        mMarginTop = (mHeight - mCellHeight * indexs.length) / 2;
+        mCellHeight = ((mHeight - offset) * 1f / 27);    //26个字母加上“#”
+        mMarginTop = (mHeight - offset - mCellHeight * indexs.length) / 2;
         //mMarginTop = 0;
     }
 

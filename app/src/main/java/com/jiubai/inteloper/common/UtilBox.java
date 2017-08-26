@@ -2,11 +2,13 @@ package com.jiubai.inteloper.common;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -14,19 +16,17 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import com.jiubai.inteloper.R;
+import com.kaopiz.kprogresshud.KProgressHUD;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -37,10 +37,8 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -381,7 +379,7 @@ public class UtilBox {
      * @return 时间戳
      */
     public static long getStringToDate(String time) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.CHINA);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  hh:mm", Locale.CHINA);
         Date date = new Date();
         try {
             date = sdf.parse(time);
@@ -570,16 +568,97 @@ public class UtilBox {
 
     }
 
-    @SafeVarargs
-    public static void startActivity(Activity activity, Intent intent, Pair... sharedElements) {
+    public static void startActivity(Activity activity, Intent intent, boolean finish) {
         activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.in_right_left, R.anim.out_right_left);
 
-        /*
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && sharedElements.length > 0) {
-            activity.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity, sharedElements).toBundle());
-        } else {
-            activity.startActivity(intent);
+        if (finish) {
+            activity.finish();
         }
-        */
+    }
+
+    public static void returnActivity(Activity activity) {
+        activity.finish();
+        activity.overridePendingTransition(R.anim.in_left_right, R.anim.out_left_right);
+    }
+
+    public static void restartApplication(Context context) {
+        //System.exit(0);
+        final Intent intent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
+
+    private static KProgressHUD kProgressHUD;
+
+    public static void showLoading(Activity activity) {
+//        promptDialog = new PromptDialog(activity);
+//
+//        promptDialog.showLoading("加载中", withAnim);
+
+        kProgressHUD = KProgressHUD.create(activity)
+                .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setCancellable(false)
+                .setAnimationSpeed(2)
+                .setDimAmount(0.5f);
+        kProgressHUD.show();
+    }
+
+    public static void dismissLoading() {
+//        if (promptDialog != null) {
+//            if (immediately) {
+//                promptDialog.dismissImmediately();
+//            } else {
+//                promptDialog.dismiss();
+//            }
+//        }
+
+        if (kProgressHUD != null) {
+            kProgressHUD.dismiss();
+        }
+    }
+
+    public static PackageInfo getPackageInfo(Context context) {
+        // 获取PackageManager的实例
+        PackageManager packageManager = context.getPackageManager();
+
+        try {
+            // getPackageName()是当前类的包名，0代表是获取版本信息
+            return packageManager.getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static void alert(Context context, String message,
+                             String positiveText, DialogInterface.OnClickListener positiveListener,
+                             String negativeText, DialogInterface.OnClickListener negativeListener) {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                        .setMessage(message)
+                        .setCancelable(true)
+                        .setPositiveButton(positiveText, positiveListener)
+                        .setNegativeButton(negativeText, negativeListener);
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
+    }
+
+    public static void alert(Context context, String message,
+                             String positiveText, DialogInterface.OnClickListener positiveListener) {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(context, android.R.style.Theme_DeviceDefault_Light_Dialog_NoActionBar_MinWidth)
+                        .setMessage(message)
+                        .setCancelable(true)
+                        .setPositiveButton(positiveText, positiveListener);
+
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(true);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.show();
     }
 }

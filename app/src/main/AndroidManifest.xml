@@ -17,7 +17,7 @@
         <activity
             android:name=".EntryActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBarOverlay">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,24 +26,33 @@
         </activity>
         <activity
             android:name=".ui.activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBarOverlay" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.LoginActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBarOverlay" />
-        <activity
-            android:name=".ui.activity.DeviceMonitorActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.activity.SearchActivity"
+            android:name=".ui.activity.MonitorActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.DeviceListActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".ui.activity.DeviceDefinitionActivity"
+            android:name=".ui.activity.DefinitionActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.activity.DeviceDefinitionModifyActivity"
+            android:name=".ui.activity.DefinitionModifyActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.NetworkTestActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.AlarmActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.ChooseDateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
@@ -53,8 +62,9 @@
             android:name="UMENG_CHANNEL"
             android:value="developer" />
 
-        <activity android:name=".ui.activity.NetworkTestActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ui.activity.AlarmDetailActivity" />
+        <activity android:name=".ui.activity.TelemetryActivity" />
+        <activity android:name=".ui.activity.FeedbackActivity"></activity>
     </application>
 
 </manifest>

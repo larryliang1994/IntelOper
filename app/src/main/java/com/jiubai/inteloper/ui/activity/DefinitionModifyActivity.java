@@ -1,6 +1,5 @@
 package com.jiubai.inteloper.ui.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,12 +7,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -29,28 +23,7 @@ import butterknife.ButterKnife;
  * Created by Larry Liang on 01/05/2017.
  */
 
-public class DeviceDefinitionModifyActivity extends BaseActivity implements RippleView.OnRippleCompleteListener {
-
-    @Bind(R.id.layout_one_column)
-    LinearLayout mOneColumnLayout;
-
-    @Bind(R.id.layout_two_column)
-    LinearLayout mTwoColumnLayout;
-
-    @Bind(R.id.tv_name_one)
-    TextView mNameOneTextView;
-
-    @Bind(R.id.tv_name_two)
-    TextView mNameTwoTextView;
-
-    @Bind(R.id.ripple_one_one)
-    RippleView mOneOneRipple;
-
-    @Bind(R.id.ripple_two_one)
-    RippleView mTwoOneRipple;
-
-    @Bind(R.id.ripple_two_two)
-    RippleView mTwoTwoRipple;
+public class DefinitionModifyActivity extends BaseActivity implements RippleView.OnRippleCompleteListener {
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
@@ -61,7 +34,7 @@ public class DeviceDefinitionModifyActivity extends BaseActivity implements Ripp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_device_definition_modify);
+        setContentView(R.layout.activity_definition_modify);
 
         ButterKnife.bind(this);
 
@@ -73,26 +46,15 @@ public class DeviceDefinitionModifyActivity extends BaseActivity implements Ripp
     private void initData() {
         Intent intent = getIntent();
 
-        if (intent.getIntExtra("column", 0) == 1) {
-            mTwoColumnLayout.setVisibility(View.GONE);
 
-            mNameOneTextView.setText(intent.getStringExtra("name"));
-        } else if (intent.getIntExtra("column", 0) == 2) {
-            mOneColumnLayout.setVisibility(View.GONE);
-
-            mNameTwoTextView.setText(intent.getStringExtra("name"));
-        }
     }
 
     private void initView() {
-        mOneOneRipple.setOnRippleCompleteListener(this);
-        mTwoOneRipple.setOnRippleCompleteListener(this);
-        mTwoTwoRipple.setOnRippleCompleteListener(this);
 
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DeviceDefinitionModifyActivity.this.finish();
+                DefinitionModifyActivity.this.finish();
             }
         });
     }
@@ -116,7 +78,7 @@ public class DeviceDefinitionModifyActivity extends BaseActivity implements Ripp
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         UtilBox.toggleSoftInput(dialog.getView(), false);
 
-                        Toast.makeText(DeviceDefinitionModifyActivity.this, "保存中", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(DefinitionModifyActivity.this, "保存中", Toast.LENGTH_SHORT).show();
 
                         edit();
                     }
@@ -136,7 +98,7 @@ public class DeviceDefinitionModifyActivity extends BaseActivity implements Ripp
             @Override
             public void run() {
                 mDialog.dismiss();
-                Toast.makeText(DeviceDefinitionModifyActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DefinitionModifyActivity.this, "保存成功", Toast.LENGTH_SHORT).show();
             }
         }, 500);
     }

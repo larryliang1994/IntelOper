@@ -2,44 +2,28 @@ package com.jiubai.inteloper.ui.activity;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jiubai.inteloper.R;
-import com.jiubai.inteloper.config.Constants;
+import com.jiubai.inteloper.common.DataTypeConverter;
+import com.jiubai.inteloper.net.RequestUtil;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import hprose.client.HproseHttpClient;
-import hprose.common.HproseCallback1;
-import hprose.common.HproseErrorEvent;
 
-public class NetworkTestActivity extends AppCompatActivity {
-
-    @Bind(R.id.editText_url)
-    EditText mUrlEditText;
-
-    @Bind(R.id.editText_port)
-    EditText mPortEditText;
-
-    @Bind(R.id.editText_method)
-    EditText mMethodEditText;
-
-    @Bind(R.id.editText_parameters)
-    EditText mParamEditText;
-
-    @Bind(R.id.textView_response)
-    TextView mResponseTextView;
+public class NetworkTestActivity extends BaseActivity {
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
+
+    @Bind(R.id.textView_response)
+    TextView mResponseTextView;
 
     private ProgressDialog mProgressDialog;
 
@@ -66,54 +50,138 @@ public class NetworkTestActivity extends AppCompatActivity {
         mProgressDialog.setMessage("请求中...");
         mProgressDialog.setCancelable(false);
         mProgressDialog.setCanceledOnTouchOutside(false);
-
-        mUrlEditText.setText(Constants.SERVER_URL);
-
-        mPortEditText.setText(Constants.PORT);
-
-        mMethodEditText.setText("hello");
-
-        mParamEditText.setText("name");
     }
 
-    @OnClick({R.id.button_send_request})
+    @OnClick({R.id.button_send_request, R.id.button_listen})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_send_request:
                 mProgressDialog.show();
-                try {
-                    String url = mUrlEditText.getText().toString();
 
-                    if (!TextUtils.isEmpty(mPortEditText.getText().toString())) {
-                        url += ":" + mPortEditText.getText().toString();
+                mResponseTextView.setText("response");
+
+                byte[] bid = DataTypeConverter.int2byte(1); // 操作码
+                byte[] bnum = DataTypeConverter.int2byte(3); // 消息数
+                Charset cs = Charset.forName("UTF-8");
+                byte[] b1 = "122160226379053350".getBytes(cs);
+                byte[] b2 = "122160226378973383".getBytes(cs);
+                byte[] b3 = "115404869887590405".getBytes(cs);
+
+                // 把所有字节合并成一条
+                byte[] bdata = DataTypeConverter.concatAll(bid, bnum, b1, b2, b3);
+
+                final int requestMsgLength = 8 + 32 + 4 + 4;
+
+                RequestUtil.request(bdata, 2, requestMsgLength, false, new RequestUtil.RequestCallback() {
+                    @Override
+                    public void success(int msgNum, byte[] msgContent) {
+                        byte[] id = new byte[8];
+                        byte[] desrc = new byte[32];
+                        byte[] value = new byte[4];
+                        byte[] v = new byte[4];
+
+                        final StringBuffer buffer = new StringBuffer();
+
+                        for (int i = 0; i < msgNum; i++) {
+                            id = DataTypeConverter.readBytes(msgContent, i * requestMsgLength, 8);
+                            desrc = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 8, 32);
+                            value = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 8 + 32, 4);
+                            v = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 8 + 32 + 4, 4);
+
+                            try {
+                                buffer.append(  "id:    ").append(DataTypeConverter.byte2long(id) + "").append("\n")
+                                        .append("desrc: ").append(new String(desrc, "GBK")).append("\n")
+                                        .append("value: ").append(DataTypeConverter.byte2int(value) + "").append("\n")
+                                        .append("v:     ").append(DataTypeConverter.byte2float(v) + "").append("\n");
+
+                                System.out.println("id: " + DataTypeConverter.byte2long(id));
+                                System.out.println("desrc: " + new String(desrc, "GBK"));
+                                System.out.println("value: " + DataTypeConverter.byte2int(value));
+                                System.out.println("v: " + DataTypeConverter.byte2float(v));
+
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mResponseTextView.setText(buffer.toString());
+
+                                mProgressDialog.dismiss();
+                            }
+                        });
                     }
 
-                    HproseHttpClient client = new HproseHttpClient(url);
-                    client.setTimeout(10000);
-                    client.invoke(mMethodEditText.getText().toString(), new Object[]{mParamEditText.getText().toString()},
-                            new HproseCallback1<String>() {
-                                @Override
-                                public void handler(String o) {
-                                    mProgressDialog.dismiss();
-                                    Log.i("intel success", o);
-                                    mResponseTextView.setText("success" + "\n" + o);
-                                }
-                            },
-                            new HproseErrorEvent() {
-                                @Override
-                                public void handler(String s, Throwable throwable) {
-                                    mProgressDialog.dismiss();
-                                    Log.i("intel error", s + " : " + throwable.toString());
-                                    mResponseTextView.setText("error" + "\n" + throwable.toString());
-                                }
-                            });
-                } catch (Exception exception) {
-                    mProgressDialog.dismiss();
+                    @Override
+                    public void error(String info, final Exception exception) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mResponseTextView.setText(exception.toString());
 
-                    exception.printStackTrace();
+                                mProgressDialog.dismiss();
+                            }
+                        });
+                    }
+                });
 
-                    Toast.makeText(this, exception.toString(), Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.button_listen:
+                mResponseTextView.setText("response");
+
+                // 如果正在监听，就停下来
+                if (RequestUtil.keepListen) {
+                    RequestUtil.keepListen = false;
+
+                    return;
                 }
+
+                final int listenMsgLength = 4 + 20 + 500;
+
+                RequestUtil.listen(2, listenMsgLength, new RequestUtil.RequestCallback() {
+                    @Override
+                    public void success(int msgNum, byte[] msgContent) {
+                        byte[] status = new byte[4];
+                        byte[] occur_time = new byte[20];
+                        byte[] warn_str = new byte[500];
+
+                        final StringBuffer buffer = new StringBuffer();
+
+                        for (int i = 0; i < msgNum; i++) {
+                            status = DataTypeConverter.readBytes(msgContent, i * listenMsgLength, 4);
+                            occur_time = DataTypeConverter.readBytes(msgContent, i * listenMsgLength + 4, 20);
+                            warn_str = DataTypeConverter.readBytes(msgContent, i * listenMsgLength + 4 + 20, 500);
+                        }
+
+                        buffer.append("\n").append("msgNum:").append(msgNum + "");
+
+                        final String displayText = mResponseTextView.getText() + buffer.toString();
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mResponseTextView.setText(displayText);
+
+                                mProgressDialog.dismiss();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void error(String info, final Exception exception) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mResponseTextView.setText(exception.toString());
+
+                                mProgressDialog.dismiss();
+                            }
+                        });
+                    }
+                });
                 break;
         }
     }
