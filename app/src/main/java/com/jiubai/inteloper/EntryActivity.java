@@ -57,8 +57,7 @@ public class EntryActivity extends BaseActivity {
                 public void run() {
                     entry();
                 }
-            }, 500);
-
+            }, 2000);
         } else {
             mDialog.show();
 
@@ -78,8 +77,6 @@ public class EntryActivity extends BaseActivity {
         mDialog.dismiss();
 
         UtilBox.startActivity(this, new Intent(EntryActivity.this, mLauncherActivity), true);
-
-        finish();
     }
 
     private void setLauncherActivity() {

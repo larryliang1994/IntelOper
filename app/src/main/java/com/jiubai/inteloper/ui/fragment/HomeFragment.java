@@ -15,16 +15,14 @@ import android.widget.TextView;
 import com.badoo.mobile.util.WeakHandler;
 import com.jiubai.inteloper.R;
 import com.jiubai.inteloper.adapter.AlarmAdapter;
-import com.jiubai.inteloper.bean.Alarm;
 import com.jiubai.inteloper.common.UtilBox;
 import com.jiubai.inteloper.manager.AlarmManager;
 import com.jiubai.inteloper.ui.activity.AlarmActivity;
 import com.jiubai.inteloper.ui.activity.ChooseDateActivity;
+import com.jiubai.inteloper.ui.activity.ChooseOperActivity;
 import com.jiubai.inteloper.ui.activity.DeviceListActivity;
 import com.jiubai.inteloper.widget.IndexBar;
 import com.jiubai.inteloper.widget.RippleView;
-
-import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -74,18 +72,7 @@ public class HomeFragment extends Fragment implements RippleView.OnRippleComplet
         mAppbarLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final ArrayList<Alarm> alarms = new ArrayList<>();
-
-                for (int i = 0; i < 1024; i++) {
-                    alarms.add(new Alarm(
-                            i % 5 + 1,
-                            "2017-08-15  12:55:36",
-                            "这是具体描述，可能会很长。这是具体描述，可能会很长。这是具体描述，可能会很长。这是具体描述，可能会很长。这是具体描述，可能会很长。这是具体描述，可能会很长。这是具体描述，可能会很长。"
-                    ));
-                }
-
                 Intent intent = new Intent(getActivity(), AlarmActivity.class);
-                intent.putExtra("alarms", AlarmManager.alarms);
                 intent.putExtra("title", "实时告警");
                 intent.putExtra("mode", AlarmAdapter.MODE_BREVIARY);
                 UtilBox.startActivity(getActivity(), intent, false);
@@ -119,15 +106,12 @@ public class HomeFragment extends Fragment implements RippleView.OnRippleComplet
                 IndexBar.offset = UtilBox.dip2px(getActivity(), 0);
 
                 intent = new Intent(getActivity(), DeviceListActivity.class);
-                intent.putExtra("source", "monitor");
+                intent.putExtra("source", DeviceListActivity.SOURCE_MONITOR);
                 UtilBox.startActivity(getActivity(), intent, false);
                 break;
 
             case R.id.ripple_definition:
-                IndexBar.offset = UtilBox.dip2px(getActivity(), 50);
-
-                intent = new Intent(getActivity(), DeviceListActivity.class);
-                intent.putExtra("source", "definition");
+                intent = new Intent(getActivity(), ChooseOperActivity.class);
                 UtilBox.startActivity(getActivity(), intent, false);
                 break;
 

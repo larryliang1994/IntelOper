@@ -35,6 +35,8 @@ public class AlarmManager {
     private Socket socket;
     private DataInputStream inputStream;
 
+    public static boolean datasetChanged = false;
+
     private AlarmManager() {}
 
     public static AlarmManager getInstance() {
@@ -59,6 +61,19 @@ public class AlarmManager {
     public void stopListen() {
         keepListen = false;
         guardThread.sendEmptyMessage(1);
+    }
+
+    public void checkAll() {
+        if (guardThread == null) {
+            initGuardThread();
+
+            guardThread.sendEmptyMessage(0);
+        }
+
+        if (listenThread == null || !listenThread.isAlive()) {
+            initListenThread();
+            listenThread.start();
+        }
     }
 
     private void initListenThread() {
@@ -135,6 +150,10 @@ public class AlarmManager {
     }
 
     private void decodeAlarm(int opCode, int msgNum) throws IOException {
+        if (msgNum != 0) {
+            datasetChanged = true;
+        }
+
         byte[] status_b;
         byte[] occur_time;
         byte[] warn_str;
@@ -153,29 +172,39 @@ public class AlarmManager {
             String occurTime = new String(occur_time, "GBK");
             String warnStr = new String(warn_str, "GBK");
 
-            Alarm alarm = findAlarm(warnStr);
+            alarms.add(0, new Alarm(status, occurTime, warnStr));
 
-            if (alarm == null) {
-                // 新增
-                alarms.add(new Alarm(status, occurTime, warnStr));
-            } else {
-                // 原来不正常，现在正常，删掉
-                if (alarm.getStatus() != Alarm.STATUS_NORMAL && status == Alarm.STATUS_NORMAL) {
-                    deleteAlarm(warnStr);
-                }
-                // 原来正常，现在不正常，修改
-                else if (alarm.getStatus() == Alarm.STATUS_NORMAL && status != Alarm.STATUS_NORMAL) {
-                    editAlarm(status, occurTime, warnStr);
-                }
-                // 原来不正常，现在不正常，修改
-                else if (alarm.getStatus() != Alarm.STATUS_NORMAL && status != Alarm.STATUS_NORMAL) {
-                    editAlarm(status, occurTime, warnStr);
-                }
-                // 原来正常，现在正常，删掉
-                else if (alarm.getStatus() == Alarm.STATUS_NORMAL && status == Alarm.STATUS_NORMAL) {
-                    deleteAlarm(warnStr);
+            while (true) {
+                if (alarms.size() > 100) {
+                    alarms.remove(alarms.size() - 1);
+                } else {
+                    break;
                 }
             }
+
+//            Alarm alarm = findAlarm(warnStr);
+//
+//            if (alarm == null) {
+//                // 新增
+//                alarms.add(new Alarm(status, occurTime, warnStr));
+//            } else {
+//                // 原来不正常，现在正常，删掉
+//                if (alarm.getStatus() != Alarm.STATUS_NORMAL && status == Alarm.STATUS_NORMAL) {
+//                    deleteAlarm(warnStr);
+//                }
+//                // 原来正常，现在不正常，修改
+//                else if (alarm.getStatus() == Alarm.STATUS_NORMAL && status != Alarm.STATUS_NORMAL) {
+//                    editAlarm(status, occurTime, warnStr);
+//                }
+//                // 原来不正常，现在不正常，修改
+//                else if (alarm.getStatus() != Alarm.STATUS_NORMAL && status != Alarm.STATUS_NORMAL) {
+//                    editAlarm(status, occurTime, warnStr);
+//                }
+//                // 原来正常，现在正常，删掉
+//                else if (alarm.getStatus() == Alarm.STATUS_NORMAL && status == Alarm.STATUS_NORMAL) {
+//                    deleteAlarm(warnStr);
+//                }
+//            }
         }
 
     }
@@ -211,14 +240,23 @@ public class AlarmManager {
     }
 
     public int getAbnormalNum() {
-        int abnormalNum = 0;
+//        int abnormalNum = 0;
 
-        for (Alarm alarm: alarms) {
-            if (alarm.getStatus() != Alarm.STATUS_NORMAL) {
-                abnormalNum++;
-            }
-        }
+//        for (Alarm alarm: alarms) {
+//            if (alarm.getStatus() != Alarm.STATUS_NORMAL) {
+//                abnormalNum++;
+//            }
+//        }
 
-        return abnormalNum;
+//        for (int i = 0; i < alarms.size(); i++) {
+//            Alarm alarm = alarms.get(i);
+//
+//            if (alarm.getStatus() != Alarm.STATUS_NORMAL) {
+//                abnormalNum++;
+//            }
+//        }
+
+//        return abnormalNum;
+        return alarms.size();
     }
 }

@@ -1,6 +1,5 @@
 package com.jiubai.inteloper.ui.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,7 +9,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.jiubai.inteloper.App;
@@ -47,8 +48,10 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
 
+    @Bind(R.id.switch_noNetwork)
+    Switch mNoNetworkSwitch;
+
     private ILoginPresenter mLoginPresenter;
-    private ProgressDialog mProgressDialog;
 
     private final int requestNum = 0;
     private int initRequestNum = 0;
@@ -69,13 +72,17 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
 
         mLoginPresenter = new LoginPresenterImpl(this, this);
 
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("连接中...");
-
         final SharedPreferences sp = App.sp;
 
         mAccountEditText.setText(sp.getString("account", ""));
         mPasswordEditText.setText(sp.getString("password", ""));
+
+        mNoNetworkSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                Config.NO_NETWORK = checked;
+            }
+        });
     }
 
     @Override
@@ -91,11 +98,18 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
         return super.onOptionsItemSelected(item);
     }
 
-    @OnClick({R.id.textView_network_test})
+    @OnClick({R.id.textView_network_test, R.id.textView_image_test})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.textView_network_test:
-                startActivity(new Intent(this, NetworkTestActivity.class));
+                UtilBox.startActivity(this, new Intent(this, NetworkTestActivity.class), false);
+                break;
+
+            case R.id.textView_image_test:
+                Intent intent = new Intent(this, MonitorActivity.class);
+                intent.putExtra("deviceName", "");
+                intent.putExtra("deviceDesc", "");
+                UtilBox.startActivity(this, intent, true);
                 break;
         }
     }
@@ -122,7 +136,7 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
                     return;
                 }
 
-                mProgressDialog.show();
+                UtilBox.showLoading(this);
 
                 mLoginPresenter.doLogin(account, password);
                 break;
@@ -131,24 +145,20 @@ public class LoginActivity extends BaseActivity implements ILoginView, RippleVie
 
     @Override
     public void onLoginResult(boolean result, String info) {
-        if (result) {
-            mProgressDialog.dismiss();
+        UtilBox.dismissLoading();
 
+        if (result) {
             SharedPreferences.Editor editor = App.sp.edit();
             editor.putString("account", mAccountEditText.getText().toString());
             editor.putString("password", mPasswordEditText.getText().toString());
             editor.apply();
 
-            entry();
+            Config.UserName = mAccountEditText.getText().toString();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            UtilBox.startActivity(this, intent, true);
         } else {
-            mProgressDialog.dismiss();
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void entry() {
-        Intent intent = new Intent(this, MainActivity.class);
-        UtilBox.startActivity(this, intent, true);
-        finish();
     }
 }

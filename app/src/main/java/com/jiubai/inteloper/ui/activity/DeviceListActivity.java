@@ -1,6 +1,5 @@
 package com.jiubai.inteloper.ui.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,24 +7,31 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jiubai.inteloper.R;
+import com.jiubai.inteloper.adapter.DeviceListAdapter;
 import com.jiubai.inteloper.bean.Device;
+import com.jiubai.inteloper.bean.DeviceListDisplay;
+import com.jiubai.inteloper.bean.Station;
 import com.jiubai.inteloper.common.UtilBox;
 import com.jiubai.inteloper.presenter.DevicePresenterImpl;
+import com.jiubai.inteloper.presenter.StationPresenterImpl;
 import com.jiubai.inteloper.ui.iview.IDeviceView;
+import com.jiubai.inteloper.ui.iview.IStationView;
 import com.jiubai.inteloper.widget.IndexBar;
-import com.jiubai.inteloper.widget.RippleView;
 import com.oshi.libsearchtoolbar.SearchAnimationToolbar;
+
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +42,7 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class DeviceListActivity extends BaseActivity implements IDeviceView {
+public class DeviceListActivity extends BaseActivity implements IDeviceView, IStationView {
 
     @Bind(R.id.appbar)
     AppBarLayout mAppbarLayout;
@@ -50,16 +56,25 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
     @Bind(R.id.indexbar)
     IndexBar mIndexBar;
 
-    @Bind(R.id.button_addDevice)
-    Button mAddDeviceButton;
+    @Bind(R.id.button_addStation)
+    Button mAddStationButton;
 
-    private MainAdapter mAdapter;
-    private List<Device> mList = new ArrayList<>();
+    public final static String SOURCE_MONITOR = "monitor"; // 设备监视
+    public final static String SOURCE_STATION = "station"; // 设备维护
+    public final static String SOURCE_LIMIT = "limit"; // 限值维护
+
+    private List<DeviceListDisplay> mList = new ArrayList<>();
+
     private LinearLayoutManager layoutManager;
     private String filter = "";
     private String source = "";
 
-    private List<Device> deviceList = new ArrayList<>();
+    private DeviceListAdapter adapter;
+
+    private List<DeviceListDisplay> displayList = new ArrayList<>();
+
+    private List<Device> devices = new ArrayList<>();
+    private List<Station> stations = new ArrayList<>();
 
     private final int REQUEST_CODE_NEW_DEVICE = 0;
     private final int REQUEST_CODE_EDIT_DEVICE = 1;
@@ -75,35 +90,74 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
 
         initView();
 
-        new DevicePresenterImpl(this, this).getDeviceList();
-
         UtilBox.showLoading(this);
     }
 
     private void initView() {
         layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter = new MainAdapter(this, mList);
-        mRecyclerView.setAdapter(mAdapter);
 
-        if (source.equals("monitor")) {
-            mAddDeviceButton.setVisibility(View.GONE);
-        } else if (source.equals("definition")) {
-            mAddDeviceButton.setVisibility(View.VISIBLE);
+        adapter = new DeviceListAdapter(this, mList);
 
-            mAddDeviceButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(DeviceListActivity.this, DefinitionActivity.class);
-                    DeviceListActivity.this.startActivityForResult(intent, REQUEST_CODE_NEW_DEVICE);
+        adapter.setOnItemClickListener(new DeviceListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+
+                String name = mList.get(position).getName();
+
+                Intent intent = null;
+                switch (source) {
+                    case SOURCE_MONITOR:
+                        intent = new Intent(DeviceListActivity.this, MonitorActivity.class);
+
+                        for (Device device : devices) {
+                            if (name.equals(device.getName())) {
+                                intent.putExtra("device", device);
+                                break;
+                            }
+                        }
+                        break;
+
+                    case SOURCE_STATION:
+                        intent = new Intent(DeviceListActivity.this, StationActivity.class);
+
+                        for (Station station : stations) {
+                            if (name.equals(station.getName())) {
+                                intent.putExtra("station", station);
+                                break;
+                            }
+                        }
+                        break;
+
+                    case SOURCE_LIMIT:
+                        intent = new Intent(DeviceListActivity.this, DefinitionActivity.class);
+
+                        for (Device device : devices) {
+                            if (name.equals(device.getName())) {
+                                intent.putExtra("device", device);
+                                break;
+                            }
+                        }
+                        break;
+
+                    default:
+                        intent = new Intent();
+                        break;
                 }
-            });
-        }
+
+                UtilBox.startActivity(DeviceListActivity.this, intent, false);
+
+                mToolbar.onBackPressed();
+            }
+        });
+
+        mRecyclerView.setAdapter(adapter);
 
         mToolbar.setSupportActionBar(this);
         mToolbar.setSearchTextColor(Color.BLACK);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.back_white);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mToolbar.setOnSearchQueryChangedListener(new SearchAnimationToolbar.OnSearchQueryChangedListener() {
             @Override
             public void onSearchCollapsed() {
@@ -126,20 +180,123 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
                 UtilBox.toggleSoftInput(mToolbar, false);
             }
         });
+
+        if (SOURCE_MONITOR.equals(source) || SOURCE_LIMIT.equals(source)) {
+            mToolbar.setTitle("设备列表");
+
+            mAddStationButton.setVisibility(View.GONE);
+
+            new DevicePresenterImpl(this, this).getDeviceList();
+        } else if (SOURCE_STATION.equals(source)) {
+            mToolbar.setTitle("厂站列表");
+
+            mAddStationButton.setVisibility(View.VISIBLE);
+
+            mAddStationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(DeviceListActivity.this, AddStationActivity.class);
+                    DeviceListActivity.this.startActivityForResult(intent, REQUEST_CODE_NEW_DEVICE);
+                }
+            });
+
+            new StationPresenterImpl(this, this).getStationList();
+        }
     }
 
     @Override
     public void onGetDeviceListResult(boolean result, String info, Object extras) {
-        UtilBox.dismissLoading();
-
         if (result) {
-            deviceList = (List<Device>) extras;
+            devices = (List<Device>) extras;
+
+            displayList = new ArrayList<>();
+
+            for (Device device: devices) {
+                displayList.add(new DeviceListDisplay(device.getName(), device.getDesc()));
+            }
+
+            // 配置拼音属性
+            HanyuPinyinOutputFormat pyFormat = new HanyuPinyinOutputFormat();
+            pyFormat.setCaseType(HanyuPinyinCaseType.UPPERCASE);
+            pyFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+            pyFormat.setVCharType(HanyuPinyinVCharType.WITH_V);
+
+            for (int i = 0; i < displayList.size(); i++) {
+                DeviceListDisplay display = displayList.get(i);
+                displayList.get(i).setFirstWord(PinyinHelper.toHanyuPinyinString(display.getName(),
+                        pyFormat, "").substring(0, 1));
+            }
 
             initIndexBar();
             initData();
+
+            UtilBox.dismissLoading();
         } else {
+            UtilBox.dismissLoading();
+
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onGetStationListResult(boolean result, String info, Object extras) {
+        if (result) {
+            stations = (List<Station>) extras;
+
+            displayList = new ArrayList<>();
+
+            for (Station station: stations) {
+                displayList.add(new DeviceListDisplay(station.getName(),
+                        station.getRegion() + "/" + station.getGroup()));
+            }
+
+            // 配置拼音属性
+            HanyuPinyinOutputFormat pyFormat = new HanyuPinyinOutputFormat();
+            pyFormat.setCaseType(HanyuPinyinCaseType.UPPERCASE);
+            pyFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+            pyFormat.setVCharType(HanyuPinyinVCharType.WITH_V);
+
+            for (int i = 0; i < displayList.size(); i++) {
+                DeviceListDisplay display = displayList.get(i);
+                displayList.get(i).setFirstWord(PinyinHelper.toHanyuPinyinString(display.getName(),
+                        pyFormat, "").substring(0, 1));
+            }
+
+            initIndexBar();
+
+            initData();
+
+            UtilBox.dismissLoading();
+        } else {
+            UtilBox.dismissLoading();
+
+            Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onGetStationInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onEditStationInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onAddStationResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetRegionListResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetGroupListResult(boolean result, String info, Object extras) {
+
     }
 
     @Override
@@ -154,6 +311,16 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
 
     @Override
     public void onAddNewDeviceResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetDeviceTelemetryResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetDeviceTelecommendResult(boolean result, String info, Object extras) {
 
     }
 
@@ -217,14 +384,15 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
     private void initData() {
         Map<String, Object> map = convertSortList(getData());
         mList.clear();
-        mList.addAll((List<Device>) map.get("sortList"));
+        mList.addAll((List<DeviceListDisplay>) map.get("sortList"));
         Object[] keys = (Object[]) map.get("keys");
         String[] letters = new String[keys.length];
         for (int i = 0; i < keys.length; i++) {
             letters[i] = keys[i].toString();
         }
         mIndexBar.setIndexs(letters);
-        mAdapter.notifyDataSetChanged();
+
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -233,9 +401,9 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
      * @param list 需要排序的数组
      * @return 返回按首字母排序的集合（集合中插入标签项），及所有出现的首字母数组
      */
-    public Map<String, Object> convertSortList(List<Device> list) {
-        HashMap<String, List<Device>> map = new HashMap<>();
-        for (Device item : list) {
+    public Map<String, Object> convertSortList(List<DeviceListDisplay> list) {
+        HashMap<String, List<DeviceListDisplay>> map = new HashMap<>();
+        for (DeviceListDisplay item : list) {
             String firstWord;
             if (TextUtils.isEmpty(item.getFirstWord())) {
                 firstWord = "#";
@@ -245,7 +413,7 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
             if (map.containsKey(firstWord)) {
                 map.get(firstWord).add(item);
             } else {
-                List<Device> mList = new ArrayList<>();
+                List<DeviceListDisplay> mList = new ArrayList<>();
                 mList.add(item);
                 map.put(firstWord, mList);
             }
@@ -253,10 +421,10 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
 
         Object[] keys = map.keySet().toArray();
         Arrays.sort(keys);
-        List<Device> sortList = new ArrayList<>();
+        List<DeviceListDisplay> sortList = new ArrayList<>();
 
         for (Object key : keys) {
-            Device t = getIndexItem(key.toString());
+            DeviceListDisplay t = getIndexItem(key.toString());
             sortList.add(t);
             sortList.addAll(map.get(key.toString()));
         }
@@ -267,21 +435,21 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
         return resultMap;
     }
 
-    private Device getIndexItem(String firstWord) {
-        Device device = new Device();
+    private DeviceListDisplay getIndexItem(String firstWord) {
+        DeviceListDisplay device = new DeviceListDisplay();
         device.setFirstWord(firstWord);
         device.setIndex(true);
         return device;
     }
 
-    private List<Device> getData() {
-        List<Device> filterList = new ArrayList<>();
+    private List<DeviceListDisplay> getData() {
+        List<DeviceListDisplay> filterList = new ArrayList<>();
 
-        for (int i = 0; i < deviceList.size(); i++) {
-            Device device = deviceList.get(i);
+        for (int i = 0; i < displayList.size(); i++) {
+            DeviceListDisplay display = displayList.get(i);
 
-            if (TextUtils.isEmpty(filter) || device.getName().contains(filter)) {
-                filterList.add(device);
+            if (TextUtils.isEmpty(filter) || display.getName().toUpperCase().contains(filter.toUpperCase())) {
+                filterList.add(display);
             }
         }
 
@@ -301,101 +469,6 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView {
                     UtilBox.showLoading(this);
                 }
                 break;
-        }
-    }
-
-    class MainAdapter extends RecyclerView.Adapter {
-
-        public final static int VIEW_INDEX = 0;
-        public final static int VIEW_CONTENT = 1;
-
-        private Context mContext;
-        private List<Device> mList;
-
-        public MainAdapter(Context context, List<Device> List) {
-            this.mContext = context;
-            this.mList = List;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == VIEW_INDEX) {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.item_index, parent, false);
-                IndexViewHolder holder = new IndexViewHolder(view);
-                holder.tvIndex = (TextView) view.findViewById(R.id.tv_index);
-                return holder;
-            } else {
-                View view = LayoutInflater.from(mContext).inflate(R.layout.item_device, parent, false);
-                ContentViewHolder holder = new ContentViewHolder(view);
-                holder.rippleView = (RippleView) view.findViewById(R.id.ripple_name);
-                holder.tvName = (TextView) view.findViewById(R.id.tv_name);
-                holder.ivDivider = (ImageView) view.findViewById(R.id.iv_divider);
-                return holder;
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
-            if (getItemViewType(position) == VIEW_INDEX) {
-                ((IndexViewHolder) holder).tvIndex.setText(mList.get(position).getFirstWord());
-            } else {
-                ((ContentViewHolder) holder).tvName.setText(mList.get(position).getName());
-
-                if (getItemViewType(position + 1) == VIEW_INDEX) {
-                    ((ContentViewHolder) holder).ivDivider.setVisibility(View.INVISIBLE);
-                } else {
-                    ((ContentViewHolder) holder).ivDivider.setVisibility(View.VISIBLE);
-                }
-
-                ((ContentViewHolder) holder).rippleView.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                    @Override
-                    public void onComplete(RippleView rippleView) {
-                        if (source.equals("monitor")) {
-                            Intent intent = new Intent(DeviceListActivity.this, MonitorActivity.class);
-                            intent.putExtra("deviceName", mList.get(position).getName());
-                            UtilBox.startActivity(DeviceListActivity.this, intent, false);
-                        } else if (source.equals("definition")) {
-                            Intent intent = new Intent(DeviceListActivity.this, DefinitionActivity.class);
-                            intent.putExtra("deviceName", mList.get(position).getName());
-                            DeviceListActivity.this.startActivityForResult(intent, REQUEST_CODE_EDIT_DEVICE);
-                        }
-
-                        mToolbar.onBackPressed();
-                    }
-                });
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mList.size();
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == mList.size() || mList.get(position).isIndex()) {
-                return VIEW_INDEX;
-            } else {
-                return VIEW_CONTENT;
-            }
-        }
-
-        private class IndexViewHolder extends RecyclerView.ViewHolder {
-            TextView tvIndex;
-
-            IndexViewHolder(View itemView) {
-                super(itemView);
-            }
-        }
-
-        private class ContentViewHolder extends RecyclerView.ViewHolder {
-            RippleView rippleView;
-            TextView tvName;
-            ImageView ivDivider;
-
-            ContentViewHolder(View itemView) {
-                super(itemView);
-            }
         }
     }
 }

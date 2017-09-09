@@ -50,34 +50,44 @@ public class AlarmPresenterImpl implements IAlarmPresenter {
                 new RequestUtil.RequestCallback() {
                     @Override
                     public void success(int msgNum, byte[] msgContent) {
-                        final ArrayList<Alarm> alarms = new ArrayList<>();
+                        if (msgNum == -999) {
+                            mActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mIAlarmView.onGetAlarmHistoryResult(false, "查询时间跨度太大", null);
+                                }
+                            });
+                        } else {
 
-                        byte[] status;
-                        byte[] occurTime;
-                        byte[] warnStr;
+                            final ArrayList<Alarm> alarms = new ArrayList<>();
 
-                        for (int i = 0; i < msgNum; i++) {
-                            status = DataTypeConverter.readBytes(msgContent, i * requestMsgLength, 4);
-                            occurTime = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 4, 20);
-                            warnStr = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 4 + 20, 500);
+                            byte[] status;
+                            byte[] occurTime;
+                            byte[] warnStr;
 
-                            alarms.add(new Alarm(
-                                    DataTypeConverter.byte2int(status),
-                                    new String(occurTime, cs),
-                                    new String(warnStr, cs)
-                            ));
+                            for (int i = 0; i < msgNum; i++) {
+                                status = DataTypeConverter.readBytes(msgContent, i * requestMsgLength, 4);
+                                occurTime = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 4, 20);
+                                warnStr = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 4 + 20, 500);
 
-                            Log.i(Constants.TAG, DataTypeConverter.byte2int(status) + "");
-                            Log.i(Constants.TAG, new String(occurTime, cs));
-                            Log.i(Constants.TAG, new String(warnStr, cs));
-                        }
+                                alarms.add(new Alarm(
+                                        DataTypeConverter.byte2int(status),
+                                        new String(occurTime, cs),
+                                        new String(warnStr, cs)
+                                ));
 
-                        mActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mIAlarmView.onGetAlarmHistoryResult(true, "", alarms);
+                                Log.i(Constants.TAG, DataTypeConverter.byte2int(status) + "");
+                                Log.i(Constants.TAG, new String(occurTime, cs));
+                                Log.i(Constants.TAG, new String(warnStr, cs));
                             }
-                        });
+
+                            mActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mIAlarmView.onGetAlarmHistoryResult(true, "", alarms);
+                                }
+                            });
+                        }
                     }
 
                     @Override

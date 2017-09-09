@@ -1,23 +1,23 @@
 package com.jiubai.inteloper.ui.activity;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bruce.pickerview.popwindow.DatePickerPopWin;
+import com.bruce.pickerview.popwindow.TimePickerPopWin;
 import com.jiubai.inteloper.R;
 import com.jiubai.inteloper.adapter.AlarmAdapter;
 import com.jiubai.inteloper.bean.Alarm;
 import com.jiubai.inteloper.bean.MyDate;
 import com.jiubai.inteloper.common.UtilBox;
+import com.jiubai.inteloper.config.Config;
 import com.jiubai.inteloper.presenter.AlarmPresenterImpl;
 import com.jiubai.inteloper.ui.iview.IAlarmView;
 import com.jiubai.inteloper.widget.RippleView;
@@ -29,8 +29,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ChooseDateActivity extends BaseActivity implements
-        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, IAlarmView {
+public class ChooseDateActivity extends BaseActivity implements IAlarmView,
+        DatePickerPopWin.OnDatePickedListener, TimePickerPopWin.OnTimePickListener {
 
     @Bind(R.id.textView_startTime)
     TextView mStartTimeTextView;
@@ -81,6 +81,10 @@ public class ChooseDateActivity extends BaseActivity implements
                 } else if (TextUtils.isEmpty(mEndDate)) {
                     Toast.makeText(ChooseDateActivity.this, "请选择结束时间", Toast.LENGTH_SHORT).show();
                     return;
+                } else if (Long.valueOf(mStartDate.replace("-", "").replace(":", "").replace(" ", "")) >=
+                        Long.valueOf(mEndDate.replace("-", "").replace(":", "").replace(" ", ""))) {
+                    Toast.makeText(ChooseDateActivity.this, "开始时间不能大于结束时间", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 UtilBox.showLoading(ChooseDateActivity.this);
@@ -101,8 +105,13 @@ public class ChooseDateActivity extends BaseActivity implements
         if (result) {
             ArrayList<Alarm> alarms = (ArrayList<Alarm>) extras;
 
+            Config.HistoryAlarms = null;
+            Config.HistoryAlarms = new ArrayList<>();
+            for (int i = 0; i < alarms.size(); i++) {
+                Config.HistoryAlarms.add(0, alarms.get(i));
+            }
+
             Intent intent = new Intent(this, AlarmActivity.class);
-            intent.putExtra("alarms", alarms);
             intent.putExtra("mode", AlarmAdapter.MODE_EXPAND);
             intent.putExtra("title", "历史告警");
             UtilBox.startActivity(this, intent, false);
@@ -113,8 +122,11 @@ public class ChooseDateActivity extends BaseActivity implements
 
     @OnClick({R.id.layout_startTime, R.id.layout_endTime})
     public void onClick(View view) {
+        UtilBox.toggleSoftInput(mKeywordEditText, false);
+
         MyDate myDate;
-        DatePickerDialog dateDialog;
+
+        DatePickerPopWin pickerPopWin;
 
         switch (view.getId()) {
             case R.id.layout_startTime:
@@ -122,25 +134,47 @@ public class ChooseDateActivity extends BaseActivity implements
 
                 myDate = getMyDate("date");
                 assert myDate != null;
-                dateDialog = new DatePickerDialog(
-                        ChooseDateActivity.this,
-                        ChooseDateActivity.this,
-                        myDate.getYear(), myDate.getMonth(), myDate.getDay());
 
-                dateDialog.show();
+                pickerPopWin = new DatePickerPopWin
+                        .Builder(this, this)
+                        .textConfirm("确定") //text of confirm button
+                        .textCancel("关闭") //text of cancel button
+                        .btnTextSize(16) // button text size
+                        .viewTextSize(25) // pick view text size
+                        .colorCancel(Color.parseColor("#999999")) //color of cancel button
+                        .colorConfirm(Color.parseColor("#1676B3"))//color of confirm button
+                        .minYear(1990) //min year in loop
+                        .maxYear(2550) // max year in loop
+                        //.showDayMonthYear(true) // shows like dd mm yyyy (default is false)
+                        .dateChose(myDate.getYear() + "-" +  myDate.getMonth() + "-" +  myDate.getDay()) // date chose when init popwindow
+                        .build();
+
+                pickerPopWin.showPopWin(this);
                 break;
 
             case R.id.layout_endTime:
                 which = "end";
 
                 myDate = getMyDate("date");
-                assert myDate != null;
-                dateDialog = new DatePickerDialog(
-                        ChooseDateActivity.this,
-                        ChooseDateActivity.this,
-                        myDate.getYear(), myDate.getMonth(), myDate.getDay());
 
-                dateDialog.show();
+                assert myDate != null;
+
+                pickerPopWin = new DatePickerPopWin
+                        .Builder(this, this)
+                        .textConfirm("确定") //text of confirm button
+                        .textCancel("关闭") //text of cancel button
+                        .btnTextSize(16) // button text size
+                        .viewTextSize(25) // pick view text size
+                        .colorCancel(Color.parseColor("#999999")) //color of cancel button
+                        .colorConfirm(Color.parseColor("#1676B3"))//color of confirm button
+                        .minYear(1990) //min year in loop
+                        .maxYear(2550) // max year in loop
+                        //.showDayMonthYear(true) // shows like dd mm yyyy (default is false)
+                        .dateChose(myDate.getYear() + "-" +  myDate.getMonth() + "-" +  myDate.getDay()) // date chose when init popwindow
+                        .build();
+
+                pickerPopWin.showPopWin(this);
+
                 break;
         }
     }
@@ -148,9 +182,9 @@ public class ChooseDateActivity extends BaseActivity implements
     private MyDate getMyDate(String which) {
         if ("date".equals(which)) {
             if (this.which.equals("start") && !TextUtils.isEmpty(mStartDate)) {
-                return new MyDate(mStartYear, mStartMonth - 1, mStartDay, 0, 0);
+                return new MyDate(mStartYear, mStartMonth, mStartDay, 0, 0);
             } else if (this.which.equals("end") && !TextUtils.isEmpty(mEndDate)) {
-                return new MyDate(mEndYear, mEndMonth - 1, mEndDay, 0, 0);
+                return new MyDate(mEndYear, mEndMonth, mEndDay, 0, 0);
             } else {
                 int year, month, day;
 
@@ -159,7 +193,7 @@ public class ChooseDateActivity extends BaseActivity implements
                 month = c.get(Calendar.MONTH);
                 day = c.get(Calendar.DAY_OF_MONTH);
 
-                return new MyDate(year, month, day, 0, 0);
+                return new MyDate(year, month + 1, day, 0, 0);
             }
         } else if ("time".equals(which)) {
             if (this.which.equals("start")
@@ -185,8 +219,21 @@ public class ChooseDateActivity extends BaseActivity implements
     }
 
     @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        monthOfYear++;
+    protected void onDestroy() {
+        Config.HistoryAlarms = null;
+
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        UtilBox.returnActivity(this);
+    }
+
+    @Override
+    public void onDatePickCompleted(int year, int monthOfYear, int dayOfMonth, String dateDesc) {
 
         if (which.equals("start")) {
             if (monthOfYear >= 10 && dayOfMonth >= 10) {
@@ -220,12 +267,26 @@ public class ChooseDateActivity extends BaseActivity implements
 
         MyDate myDate = getMyDate("time");
         assert myDate != null;
-        TimePickerDialog dialog = new TimePickerDialog(this, this, myDate.getHour(), myDate.getMinute(), true);
-        dialog.show();
+
+        TimePickerPopWin timePickerPopWin = new TimePickerPopWin
+                .Builder(this, this)
+                .textConfirm("确定")
+                .textCancel("关闭")
+                .btnTextSize(16)
+                .viewTextSize(25)
+                .colorCancel(Color.parseColor("#999999"))
+                .colorConfirm(Color.parseColor("#1676B3"))
+                .build();
+        timePickerPopWin.showPopWin(this);
     }
 
     @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+    public void onTimePickCompleted(int hourOfDay, int minute, String AM_PM, String time) {
+
+        if ("PM".equals(AM_PM)) {
+            hourOfDay += 12;
+        }
+
         if (which.equals("start")) {
             if (minute >= 10 && hourOfDay >= 10) {
                 mStartDate += "  " + hourOfDay + ":" + minute;
@@ -257,12 +318,5 @@ public class ChooseDateActivity extends BaseActivity implements
             mEndHour = hourOfDay;
             mEndMinute = minute;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-
-        UtilBox.returnActivity(this);
     }
 }

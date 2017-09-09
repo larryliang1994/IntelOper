@@ -7,13 +7,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.jiubai.inteloper.R;
+import com.jiubai.inteloper.bean.Device;
 import com.jiubai.inteloper.common.UtilBox;
-import com.jiubai.inteloper.ui.fragment.DeviceInfoFragment;
+import com.jiubai.inteloper.ui.fragment.DeviceTelecommandFragment;
+import com.jiubai.inteloper.ui.fragment.DeviceTelemetryFragment;
+import com.jiubai.inteloper.ui.fragment.DeviceWireFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -29,9 +30,12 @@ public class MonitorActivity extends BaseActivity {
     @Bind(R.id.container)
     ViewPager mViewPager;
 
+    public int currentInitNum = 0;
+    public int initNum = 2;
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    private String deviceName;
+    private Device device;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,7 @@ public class MonitorActivity extends BaseActivity {
 
         ButterKnife.bind(this);
 
-        deviceName = getIntent().getStringExtra("deviceName");
+        device = (Device) getIntent().getSerializableExtra("device");
 
         initView();
     }
@@ -55,6 +59,7 @@ public class MonitorActivity extends BaseActivity {
         });
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
     }
@@ -64,39 +69,6 @@ public class MonitorActivity extends BaseActivity {
         super.onBackPressed();
 
         UtilBox.returnActivity(this);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_device_wire, container, false);
-            return rootView;
-        }
     }
 
     /**
@@ -111,28 +83,38 @@ public class MonitorActivity extends BaseActivity {
 
         @Override
         public Fragment getItem(int position) {
-            if (position == 0) {
-                DeviceInfoFragment deviceInfoFragment = new DeviceInfoFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("deviceName", deviceName);
-                deviceInfoFragment.setArguments(bundle);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("device", device);
 
-                return deviceInfoFragment;
+            if (position == 0) {
+                DeviceTelemetryFragment deviceTelemetryFragment = new DeviceTelemetryFragment();
+                deviceTelemetryFragment.setArguments(bundle);
+
+                return deviceTelemetryFragment;
+            } else if (position == 1) {
+                DeviceTelecommandFragment deviceTelecommandFragment = new DeviceTelecommandFragment();
+                deviceTelecommandFragment.setArguments(bundle);
+
+                return deviceTelecommandFragment;
             } else {
-                return PlaceholderFragment.newInstance(position + 1);
+                DeviceWireFragment deviceWireFragment = new DeviceWireFragment();
+                deviceWireFragment.setArguments(bundle);
+
+                return deviceWireFragment;
             }
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position) {
-                case 0: return "数据显示";
-                case 1: return "接线显示";
+                case 0: return "遥测";
+                case 1: return "遥信";
+                case 2: return "接线";
             }
             return null;
         }

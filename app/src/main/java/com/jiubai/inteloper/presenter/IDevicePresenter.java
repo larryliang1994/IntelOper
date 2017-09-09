@@ -11,4 +11,6 @@ public interface IDevicePresenter {
     void getDeviceInfo(String name);
     void editDeviceInfo(Device sourceDevice, Device newDevice);
     void addNewDevice(Device device);
+    void getDeviceTelemetry(String name);
+    void getDeviceTelecommend(String name);
 }

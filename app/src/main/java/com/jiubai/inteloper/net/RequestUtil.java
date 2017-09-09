@@ -3,6 +3,7 @@ package com.jiubai.inteloper.net;
 import android.util.Log;
 
 import com.jiubai.inteloper.common.DataTypeConverter;
+import com.jiubai.inteloper.config.Config;
 import com.jiubai.inteloper.config.Constants;
 
 import java.io.DataInputStream;
@@ -10,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 /**
  * Created by larry on 28/06/2017.
@@ -28,9 +30,14 @@ public class RequestUtil {
                     Socket socket = new Socket(netAddress, Constants.PORT);
                     socket.setSoTimeout(Constants.REQUEST_TIMEOUT);
 
+                    Charset cs = Charset.forName("GBK");
+                    byte[] userName = (Config.UserName + "\0").getBytes(cs);
+                    byte[] userName_offset = new byte[20 - userName.length];
+                    byte[] new_input = DataTypeConverter.concatAll(userName, userName_offset, input);
+
                     // 发送数据
                     DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-                    outputStream.write(input);
+                    outputStream.write(new_input);
                     outputStream.flush();
 
                     // 接收数据
@@ -73,11 +80,29 @@ public class RequestUtil {
                             // -1表示数据结束
                             if (msgNum == -1) {
 
+                                Log.i(Constants.TAG, "msgNum = " + msgNum);
+
                                 outputStream.close();
                                 inputStream.close();
                                 socket.close();
 
                                 break;
+                            }
+
+                            if (msgNum < -1) {
+                                Log.i(Constants.TAG, "msgNum = " + msgNum);
+
+                                if (msgNum == -99) {
+                                    callback.error("数据查询失败", new Exception());
+                                } else {
+                                    callback.success(msgNum, null);
+                                }
+
+                                outputStream.close();
+                                inputStream.close();
+                                socket.close();
+
+                                return;
                             }
 
                             byte[] msgContent = new byte[msgNum * msgLength];

@@ -24,14 +24,21 @@
     </android.support.design.widget.AppBarLayout>
 
     <Button
-        android:id="@+id/button_addDevice"
+        android:id="@+id/button_addStation"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/colorPrimary"
         android:layout_alignParentBottom="true"
-        android:text="+添加新设备"
+        android:text="+添加厂站"
         android:textSize="18sp"
         android:textColor="#ffffff" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/appbar"
+        android:layout_above="@id/button_addStation"/>
 
     <com.jiubai.inteloper.widget.IndexBar
         android:id="@+id/indexbar"
@@ -53,13 +60,5 @@
         android:textColor="#ffffff"
         android:textSize="40sp"
         android:visibility="gone" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/appbar"
-        android:layout_above="@id/button_addDevice"/>
-
 
 </RelativeLayout>

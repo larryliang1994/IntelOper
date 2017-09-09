@@ -1,26 +1,27 @@
 package com.jiubai.inteloper.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Larry Liang on 30/04/2017.
  */
 
-public class Device {
+public class Device implements Serializable {
 
     private String id;
     private String name;
-    private String firstWord;
-    private boolean isIndex;
+    private String desc;
 
     private ArrayList<Attr> attrs;
 
     public Device() {
     }
 
-    public Device(String id, String name) {
+    public Device(String id, String name, String desc) {
         this.id = id;
         this.name = name;
+        this.desc = desc;
     }
 
     public String getName() {
@@ -31,20 +32,12 @@ public class Device {
         this.name = name;
     }
 
-    public String getFirstWord() {
-        return firstWord;
+    public String getDesc() {
+        return desc;
     }
 
-    public void setFirstWord(String firstWord) {
-        this.firstWord = firstWord;
-    }
-
-    public boolean isIndex() {
-        return isIndex;
-    }
-
-    public void setIndex(boolean index) {
-        isIndex = index;
+    public void setDesc(String desc) {
+        this.desc = desc;
     }
 
     public String getId() {

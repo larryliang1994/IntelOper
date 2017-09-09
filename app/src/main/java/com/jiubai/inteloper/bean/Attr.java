@@ -5,10 +5,9 @@ package com.jiubai.inteloper.bean;
  */
 
 public class Attr {
-    public static final int TYPE_VOLTAGE = 1;
-    public static final int TYPE_CURRENT = 2;
-    public static final int TYPE_ACTIVE = 3;
-    public static final int TYPE_IDLE = 4;
+    public static final int TYPE_CURRENT_A = 1;
+    public static final int TYPE_CURRENT_B = 2;
+    public static final int TYPE_CURRENT_C = 3;
 
     private int type;
     private boolean isExist;

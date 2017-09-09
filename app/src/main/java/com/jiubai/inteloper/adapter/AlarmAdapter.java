@@ -51,7 +51,7 @@ public class AlarmAdapter extends RecyclerView.Adapter {
 
         final Alarm alarm = alarms.get(position);
 
-        if (alarm.getStatus() == Alarm.STATUS_NORMAL) {
+        if (alarm.getStatus() == Alarm.STATUS_NORMAL || alarm.getStatus() == Alarm.STATUS_BACK) {
             viewHolder.statusTextView.setTextColor(Color.parseColor("#09BB07"));
         } else {
             viewHolder.statusTextView.setTextColor(Color.parseColor("#FF3B30"));
@@ -76,6 +76,14 @@ public class AlarmAdapter extends RecyclerView.Adapter {
 
             case Alarm.STATUS_DOWN_2:
                 viewHolder.statusTextView.setText("越下限2");
+                break;
+
+            case Alarm.STATUS_CHANGE:
+                viewHolder.statusTextView.setText("动作");
+                break;
+
+            case Alarm.STATUS_BACK:
+                viewHolder.statusTextView.setText("复归");
                 break;
         }
 

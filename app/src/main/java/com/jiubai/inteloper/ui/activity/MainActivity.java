@@ -97,6 +97,13 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        AlarmManager.getInstance().checkAll();
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 

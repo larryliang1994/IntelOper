@@ -6,12 +6,15 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/icon"
+        android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -63,8 +66,13 @@
             android:value="developer" />
 
         <activity android:name=".ui.activity.AlarmDetailActivity" />
+        <activity android:name=".ui.activity.CheckPictureActivity" />
         <activity android:name=".ui.activity.TelemetryActivity" />
-        <activity android:name=".ui.activity.FeedbackActivity"></activity>
+        <activity android:name=".ui.activity.ChooseOperActivity" />
+        <activity android:name=".ui.activity.FeedbackActivity" />
+        <activity android:name=".ui.activity.AddStationActivity" />
+        <activity android:name=".ui.activity.StationActivity" />
+        <activity android:name=".ui.activity.StationDeviceActivity"></activity>
     </application>
 
 </manifest>

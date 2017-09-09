@@ -9,4 +9,6 @@ public interface IDeviceView {
     void onGetDeviceInfoResult(boolean result, String info, Object extras);
     void onEditDeviceInfoResult(boolean result, String info, Object extras);
     void onAddNewDeviceResult(boolean result, String info, Object extras);
+    void onGetDeviceTelemetryResult(boolean result, String info, Object extras);
+    void onGetDeviceTelecommendResult(boolean result, String info, Object extras);
 }

@@ -31,82 +31,64 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
     @Bind(R.id.editText_name)
     EditText mNameEditText;
 
-    @Bind(R.id.checkBox_voltage)
-    SmoothCheckBox mVoltageCheckBox;
+    @Bind(R.id.checkBox_currentA)
+    SmoothCheckBox mCurrentACheckBox;
 
-    @Bind(R.id.checkBox_current)
-    SmoothCheckBox mCurrentCheckBox;
+    @Bind(R.id.checkBox_currentB)
+    SmoothCheckBox mCurrentBCheckBox;
 
-    @Bind(R.id.checkBox_active)
-    SmoothCheckBox mActiveCheckBox;
+    @Bind(R.id.checkBox_currentC)
+    SmoothCheckBox mCurrentCCheckBox;
 
-    @Bind(R.id.checkBox_idle)
-    SmoothCheckBox mIdleCheckBox;
+    @Bind(R.id.layout_currentA)
+    LinearLayout mCurrentALayout;
 
-    @Bind(R.id.layout_voltage)
-    LinearLayout mVoltageLayout;
+    @Bind(R.id.layout_currentB)
+    LinearLayout mCurrentBLayout;
 
-    @Bind(R.id.layout_current)
-    LinearLayout mCurrentLayout;
+    @Bind(R.id.layout_currentC)
+    LinearLayout mCurrentCLayout;
 
-    @Bind(R.id.layout_active)
-    LinearLayout mActiveLayout;
+    @Bind(R.id.layout_currentA_edit)
+    LinearLayout mCurrentAEditLayout;
 
-    @Bind(R.id.layout_idle)
-    LinearLayout mIdleLayout;
+    @Bind(R.id.layout_currentB_edit)
+    LinearLayout mCurrentBEditLayout;
 
-    @Bind(R.id.layout_voltage_edit)
-    LinearLayout mVoltageEditLayout;
+    @Bind(R.id.layout_currentC_edit)
+    LinearLayout mCurrentCEditLayout;
 
-    @Bind(R.id.layout_current_edit)
-    LinearLayout mCurrentEditLayout;
+    @Bind(R.id.layout_currentA_divider)
+    LinearLayout mCurrentADividerLayout;
 
-    @Bind(R.id.layout_active_edit)
-    LinearLayout mActiveEditLayout;
+    @Bind(R.id.layout_currentB_divider)
+    LinearLayout mCurrentBDividerLayout;
 
-    @Bind(R.id.layout_idle_edit)
-    LinearLayout mIdleEditLayout;
+    @Bind(R.id.layout_currentC_divider)
+    LinearLayout mCurrentCDividerLayout;
 
-    @Bind(R.id.layout_voltage_divider)
-    LinearLayout mVoltageDividerLayout;
+    @Bind(R.id.editText_currentA_up)
+    EditText mCurrentAUpEditText;
 
-    @Bind(R.id.layout_current_divider)
-    LinearLayout mCurrentDividerLayout;
+    @Bind(R.id.editText_currentA_down)
+    EditText mCurrentADownEditText;
 
-    @Bind(R.id.layout_active_divider)
-    LinearLayout mActiveDividerLayout;
+    @Bind(R.id.editText_currentB_up)
+    EditText mCurrentBUpEditText;
 
-    @Bind(R.id.layout_idle_divider)
-    LinearLayout mIdleDividerLayout;
+    @Bind(R.id.editText_currentB_down)
+    EditText mCurrentBDownEditText;
 
-    @Bind(R.id.editText_voltage_up)
-    EditText mVoltageUpEditText;
+    @Bind(R.id.editText_currentC_up)
+    EditText mCurrentCUpEditText;
 
-    @Bind(R.id.editText_voltage_down)
-    EditText mVoltageDownEditText;
-
-    @Bind(R.id.editText_current_up)
-    EditText mCurrentUpEditText;
-
-    @Bind(R.id.editText_current_down)
-    EditText mCurrentDownEditText;
-
-    @Bind(R.id.editText_active_up)
-    EditText mActiveUpEditText;
-
-    @Bind(R.id.editText_active_down)
-    EditText mActiveDownEditText;
-
-    @Bind(R.id.editText_idle_up)
-    EditText mIdleUpEditText;
-
-    @Bind(R.id.editText_idle_down)
-    EditText mIdleDownEditText;
+    @Bind(R.id.editText_currentC_down)
+    EditText mCurrentCDownEditText;
 
     @Bind(R.id.ripple_save)
     RippleView mSaveRipple;
 
-    private String deviceName;
+    private Device device;
     private Device sourceDevice;
 
     @Override
@@ -117,7 +99,7 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
 
         ButterKnife.bind(this);
 
-        deviceName = getIntent().getStringExtra("deviceName");
+        device = (Device) getIntent().getSerializableExtra("device");
 
         initView();
     }
@@ -132,15 +114,15 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
 
         setupCheckBox();
 
-        if (!TextUtils.isEmpty(deviceName)) {
+        if (!TextUtils.isEmpty(device.getName())) {
             UtilBox.showLoading(this);
-            new DevicePresenterImpl(this, this).getDeviceInfo(deviceName);
+            new DevicePresenterImpl(this, this).getDeviceInfo(device.getName());
         }
 
         mSaveRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                if (TextUtils.isEmpty(deviceName)) {
+                if (TextUtils.isEmpty(device.getName())) {
                     // 新增
                     if (TextUtils.isEmpty(mNameEditText.getText().toString())) {
                         Toast.makeText(DefinitionActivity.this, "请填写设备名称", Toast.LENGTH_SHORT).show();
@@ -212,77 +194,70 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
         }
     }
 
+    @Override
+    public void onGetDeviceTelemetryResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetDeviceTelecommendResult(boolean result, String info, Object extras) {
+
+    }
+
     private Device getDevice() {
         final Device device = new Device();
 
         ArrayList<Attr> attrs = new ArrayList<>();
 
-        if (mVoltageCheckBox.isChecked()) {
-            if (TextUtils.isEmpty(mVoltageUpEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写电压上限", Toast.LENGTH_SHORT).show();
+        if (mCurrentACheckBox.isChecked()) {
+            if (TextUtils.isEmpty(mCurrentAUpEditText.getText().toString())) {
+                Toast.makeText(DefinitionActivity.this, "请填写A相电流上限", Toast.LENGTH_SHORT).show();
                 return null;
             }
 
-            if (TextUtils.isEmpty(mVoltageDownEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写电压下限", Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(mCurrentADownEditText.getText().toString())) {
+                Toast.makeText(DefinitionActivity.this, "请填写A相电流下限", Toast.LENGTH_SHORT).show();
                 return null;
             }
 
             attrs.add(new Attr(
-                    Attr.TYPE_VOLTAGE, true,
-                    Float.valueOf(mVoltageUpEditText.getText().toString()),
-                    Float.valueOf(mVoltageDownEditText.getText().toString())));
+                    Attr.TYPE_CURRENT_A, true,
+                    Float.valueOf(mCurrentAUpEditText.getText().toString()),
+                    Float.valueOf(mCurrentADownEditText.getText().toString())));
         }
 
-        if (mCurrentCheckBox.isChecked()) {
-            if (TextUtils.isEmpty(mCurrentUpEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写电流上限", Toast.LENGTH_SHORT).show();
+        if (mCurrentBCheckBox.isChecked()) {
+            if (TextUtils.isEmpty(mCurrentBUpEditText.getText().toString())) {
+                Toast.makeText(DefinitionActivity.this, "请填写B相电流上限", Toast.LENGTH_SHORT).show();
                 return null;
             }
 
-            if (TextUtils.isEmpty(mCurrentDownEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写电流下限", Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(mCurrentBDownEditText.getText().toString())) {
+                Toast.makeText(DefinitionActivity.this, "请填写B相电流下限", Toast.LENGTH_SHORT).show();
                 return null;
             }
 
             attrs.add(new Attr(
-                    Attr.TYPE_CURRENT, true,
-                    Float.valueOf(mCurrentUpEditText.getText().toString()),
-                    Float.valueOf(mCurrentDownEditText.getText().toString())));
+                    Attr.TYPE_CURRENT_B, true,
+                    Float.valueOf(mCurrentBUpEditText.getText().toString()),
+                    Float.valueOf(mCurrentBDownEditText.getText().toString())));
         }
 
-        if (mActiveCheckBox.isChecked()) {
-            if (TextUtils.isEmpty(mActiveUpEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写有功压上限", Toast.LENGTH_SHORT).show();
+        if (mCurrentCCheckBox.isChecked()) {
+            if (TextUtils.isEmpty(mCurrentCUpEditText.getText().toString())) {
+                Toast.makeText(DefinitionActivity.this, "请填写C相电流上限", Toast.LENGTH_SHORT).show();
                 return null;
             }
 
-            if (TextUtils.isEmpty(mActiveDownEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写有功下限", Toast.LENGTH_SHORT).show();
-                return null;
-            }
-
-            attrs.add(new Attr(
-                    Attr.TYPE_ACTIVE, true,
-                    Float.valueOf(mActiveUpEditText.getText().toString()),
-                    Float.valueOf(mActiveDownEditText.getText().toString())));
-        }
-
-        if (mIdleCheckBox.isChecked()) {
-            if (TextUtils.isEmpty(mIdleUpEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写无功上限", Toast.LENGTH_SHORT).show();
-                return null;
-            }
-
-            if (TextUtils.isEmpty(mIdleDownEditText.getText().toString())) {
-                Toast.makeText(DefinitionActivity.this, "请填写无功下限", Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(mCurrentCDownEditText.getText().toString())) {
+                Toast.makeText(DefinitionActivity.this, "请填写C相电流下限", Toast.LENGTH_SHORT).show();
                 return null;
             }
 
             attrs.add(new Attr(
-                    Attr.TYPE_IDLE, true,
-                    Float.valueOf(mIdleUpEditText.getText().toString()),
-                    Float.valueOf(mIdleDownEditText.getText().toString())));
+                    Attr.TYPE_CURRENT_C, true,
+                    Float.valueOf(mCurrentCUpEditText.getText().toString()),
+                    Float.valueOf(mCurrentCDownEditText.getText().toString())));
         }
 
         device.setAttrs(attrs);
@@ -299,7 +274,7 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
         if (result) {
             sourceDevice = (Device) extras;
 
-            mNameEditText.setText(deviceName);
+            mNameEditText.setText(device.getName());
 
             mNameEditText.setEnabled(false);
 
@@ -307,35 +282,27 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
 
             for (Attr attr: attrs) {
                 switch (attr.getType()) {
-                    case Attr.TYPE_VOLTAGE:
+                    case Attr.TYPE_CURRENT_A:
                         if (attr.isExist()) {
-                            mVoltageCheckBox.setChecked(true, true);
-                            mVoltageUpEditText.setText(String.valueOf(attr.getUpValue()));
-                            mVoltageDownEditText.setText(String.valueOf(attr.getDownValue()));
+                            mCurrentACheckBox.setChecked(true, true);
+                            mCurrentAUpEditText.setText(String.valueOf(attr.getUpValue()));
+                            mCurrentADownEditText.setText(String.valueOf(attr.getDownValue()));
                         }
                         break;
 
-                    case Attr.TYPE_CURRENT:
+                    case Attr.TYPE_CURRENT_B:
                         if (attr.isExist()) {
-                            mCurrentCheckBox.setChecked(true, true);
-                            mCurrentUpEditText.setText(String.valueOf(attr.getUpValue()));
-                            mCurrentDownEditText.setText(String.valueOf(attr.getDownValue()));
+                            mCurrentBCheckBox.setChecked(true, true);
+                            mCurrentBUpEditText.setText(String.valueOf(attr.getUpValue()));
+                            mCurrentBDownEditText.setText(String.valueOf(attr.getDownValue()));
                         }
                         break;
 
-                    case Attr.TYPE_ACTIVE:
+                    case Attr.TYPE_CURRENT_C:
                         if (attr.isExist()) {
-                            mActiveCheckBox.setChecked(true, true);
-                            mActiveUpEditText.setText(String.valueOf(attr.getUpValue()));
-                            mActiveDownEditText.setText(String.valueOf(attr.getDownValue()));
-                        }
-                        break;
-
-                    case Attr.TYPE_IDLE:
-                        if (attr.isExist()) {
-                            mIdleCheckBox.setChecked(true, true);
-                            mIdleUpEditText.setText(String.valueOf(attr.getUpValue()));
-                            mIdleDownEditText.setText(String.valueOf(attr.getDownValue()));
+                            mCurrentCCheckBox.setChecked(true, true);
+                            mCurrentCUpEditText.setText(String.valueOf(attr.getUpValue()));
+                            mCurrentCDownEditText.setText(String.valueOf(attr.getDownValue()));
                         }
                         break;
                 }
@@ -346,82 +313,62 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
     }
 
     private void setupCheckBox() {
-        mVoltageLayout.setOnClickListener(new View.OnClickListener() {
+        mCurrentALayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mVoltageCheckBox.setChecked(!mVoltageCheckBox.isChecked(), true);
+                mCurrentACheckBox.setChecked(!mCurrentACheckBox.isChecked(), true);
             }
         });
 
-        mCurrentLayout.setOnClickListener(new View.OnClickListener() {
+        mCurrentBLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mCurrentCheckBox.setChecked(!mCurrentCheckBox.isChecked(), true);
+                mCurrentBCheckBox.setChecked(!mCurrentBCheckBox.isChecked(), true);
             }
         });
 
-        mActiveLayout.setOnClickListener(new View.OnClickListener() {
+        mCurrentCLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mActiveCheckBox.setChecked(!mActiveCheckBox.isChecked(), true);
+                mCurrentCCheckBox.setChecked(!mCurrentCCheckBox.isChecked(), true);
             }
         });
 
-        mIdleLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mIdleCheckBox.setChecked(!mIdleCheckBox.isChecked(), true);
-            }
-        });
-
-        mVoltageCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+        mCurrentACheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
                 if (isChecked) {
-                    mVoltageDividerLayout.setVisibility(View.VISIBLE);
-                    mVoltageEditLayout.setVisibility(View.VISIBLE);
+                    mCurrentADividerLayout.setVisibility(View.VISIBLE);
+                    mCurrentAEditLayout.setVisibility(View.VISIBLE);
                 } else {
-                    mVoltageDividerLayout.setVisibility(View.GONE);
-                    mVoltageEditLayout.setVisibility(View.GONE);
+                    mCurrentADividerLayout.setVisibility(View.GONE);
+                    mCurrentAEditLayout.setVisibility(View.GONE);
                 }
             }
         });
 
-        mCurrentCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+        mCurrentBCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
                 if (isChecked) {
-                    mCurrentDividerLayout.setVisibility(View.VISIBLE);
-                    mCurrentEditLayout.setVisibility(View.VISIBLE);
+                    mCurrentBDividerLayout.setVisibility(View.VISIBLE);
+                    mCurrentBEditLayout.setVisibility(View.VISIBLE);
                 } else {
-                    mCurrentDividerLayout.setVisibility(View.GONE);
-                    mCurrentEditLayout.setVisibility(View.GONE);
+                    mCurrentBDividerLayout.setVisibility(View.GONE);
+                    mCurrentBEditLayout.setVisibility(View.GONE);
                 }
             }
         });
 
-        mActiveCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+        mCurrentCCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
                 if (isChecked) {
-                    mActiveDividerLayout.setVisibility(View.VISIBLE);
-                    mActiveEditLayout.setVisibility(View.VISIBLE);
+                    mCurrentCDividerLayout.setVisibility(View.VISIBLE);
+                    mCurrentCEditLayout.setVisibility(View.VISIBLE);
                 } else {
-                    mActiveDividerLayout.setVisibility(View.GONE);
-                    mActiveEditLayout.setVisibility(View.GONE);
-                }
-            }
-        });
-
-        mIdleCheckBox.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
-                if (isChecked) {
-                    mIdleDividerLayout.setVisibility(View.VISIBLE);
-                    mIdleEditLayout.setVisibility(View.VISIBLE);
-                } else {
-                    mIdleDividerLayout.setVisibility(View.GONE);
-                    mIdleEditLayout.setVisibility(View.GONE);
+                    mCurrentCDividerLayout.setVisibility(View.GONE);
+                    mCurrentCEditLayout.setVisibility(View.GONE);
                 }
             }
         });
@@ -439,4 +386,5 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
     public void onGetDeviceListResult(boolean result, String info, Object extras) {
 
     }
+
 }

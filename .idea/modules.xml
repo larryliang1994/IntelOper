@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IntelOper.iml" filepath="$PROJECT_DIR$/IntelOper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PickView/PickView.iml" filepath="$PROJECT_DIR$/PickView/PickView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

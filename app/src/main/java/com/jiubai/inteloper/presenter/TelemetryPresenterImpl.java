@@ -29,12 +29,20 @@ public class TelemetryPresenterImpl implements ITelemetryPresenter {
 
         final Charset cs = Charset.forName("GBK");
 
-        byte[] id = (deviceName + "/" + type + "\0").getBytes(cs);
+        byte[] id = (deviceName + "\0").getBytes(cs);
         byte[] id_offset = new byte[64-id.length];
+
+        byte[] which = null;
+        switch (type) {
+            case "电压值": which = DataTypeConverter.int2byte(1);  break;
+            case "电流值": which = DataTypeConverter.int2byte(2);  break;
+            case "温度值": which = DataTypeConverter.int2byte(3);  break;
+        }
+
         byte[] date = (queryDate + "\0").getBytes(cs);
 
         // 把所有字节合并成一条
-        byte[] input = DataTypeConverter.concatAll(requestCode, msgNum, id, id_offset, date);
+        byte[] input = DataTypeConverter.concatAll(requestCode, msgNum, id, id_offset, which, date);
 
         final int requestMsgLength = 4;
 
@@ -70,5 +78,17 @@ public class TelemetryPresenterImpl implements ITelemetryPresenter {
                         });
                     }
                 });
+
+//        final ArrayList<Float> values = new ArrayList<>();
+//        for (int i = 0; i < 1440 * 3; i++) {
+//            float value = (float)Math.random() * 20f;
+//            if (Math.random() > 0.5) {
+//                values.add(value);
+//            } else {
+//                values.add(value * -1f);
+//            }
+//        }
+//
+//        mITelemetryView.onGetTelemetryDataResult(true, "", values);
     }
 }

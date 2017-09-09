@@ -12,6 +12,8 @@ public class Alarm implements Serializable {
     public static final int STATUS_DOWN = 3;
     public static final int STATUS_UP_2 = 4;
     public static final int STATUS_DOWN_2 = 5;
+    public static final int STATUS_CHANGE = 28;
+    public static final int STATUS_BACK = 29;
 
     private int status;
     private String occurTime;

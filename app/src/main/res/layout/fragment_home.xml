@@ -24,8 +24,9 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="180dp"
+                android:orientation="vertical"
+                android:background="@drawable/home_background">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -85,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="right|center_vertical"
-                        android:text="故障"
+                        android:text="告警"
                         android:textColor="#ffffff"
                         android:textSize="18sp" />
 

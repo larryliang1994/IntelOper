@@ -9,6 +9,7 @@
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="md_dark_theme">false</item>
         <item name="android:datePickerDialogTheme">@style/MyDatePickerDialogTheme</item>
+        <item name="android:timePickerDialogTheme">@style/MyDatePickerDialogTheme</item>
     </style>
 
     <style name="AppTheme.NoActionBarOverlay" parent="AppTheme">

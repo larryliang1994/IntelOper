@@ -76,8 +76,8 @@ public class FeedbackActivity extends BaseActivity {
 
                     Log.i("info", deviceInfo);
 
-                    String[] keys = {"a", "content", "equipment"};
-                    String[] values = {"app_feedback", mEditText.getText().toString(), deviceInfo};
+                    String[] keys = {"a", "content", "equipment", "cookie_secretid", "site_name"};
+                    String[] values = {"app_feedback", mEditText.getText().toString(), deviceInfo, "aea8ccf0dfd3988c7feab064d087ccc3", "dyjk"};
 
                     VolleyUtil.request("http://ucenter.jiubaiwang.cn/app_api.php", keys, values,
                             new Response.Listener<String>() {
