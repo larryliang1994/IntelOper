@@ -70,7 +70,7 @@
         <activity android:name=".ui.activity.TelemetryActivity" />
         <activity android:name=".ui.activity.ChooseOperActivity" />
         <activity android:name=".ui.activity.FeedbackActivity" />
-        <activity android:name=".ui.activity.AddStationActivity" />
+        <activity android:name=".ui.activity.StationEditActivity" />
         <activity android:name=".ui.activity.StationActivity" />
         <activity android:name=".ui.activity.StationDeviceActivity"></activity>
     </application>

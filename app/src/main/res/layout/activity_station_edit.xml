@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/background"
-    tools:context="com.jiubai.inteloper.ui.activity.AddStationActivity">
+    tools:context="com.jiubai.inteloper.ui.activity.StationEditActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -232,29 +232,62 @@
 
             </LinearLayout>
 
-            <com.jiubai.inteloper.widget.RippleView
-                android:id="@+id/ripple_query"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/round_button_login"
-                android:elevation="0dp"
-                app:rv_rippleDuration="200"
-                app:rv_type="rectangle">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="16dp">
 
-                <Button
-                    android:layout_width="match_parent"
+                <com.jiubai.inteloper.widget.RippleView
+                    android:id="@+id/ripple_delete"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="50dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:background="@null"
+                    android:background="@drawable/round_button_login_hollow"
                     android:elevation="0dp"
-                    android:text="添加厂站"
-                    android:textColor="#ffffff"
-                    android:textSize="18sp" />
-            </com.jiubai.inteloper.widget.RippleView>
+                    app:rv_rippleDuration="200"
+                    app:rv_type="rectangle">
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@null"
+                        android:elevation="0dp"
+                        android:text="删除"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="18sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentStart="true" />
+                </com.jiubai.inteloper.widget.RippleView>
+
+                <Space
+                    android:id="@+id/space"
+                    android:layout_width="16dp"
+                    android:layout_height="match_parent" />
+
+                <com.jiubai.inteloper.widget.RippleView
+                    android:id="@+id/ripple_save"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:background="@drawable/round_button_login"
+                    android:elevation="0dp"
+                    app:rv_rippleDuration="200"
+                    app:rv_type="rectangle">
+
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@null"
+                        android:elevation="0dp"
+                        android:text="保存"
+                        android:textColor="#ffffff"
+                        android:textSize="18sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentStart="true" />
+                </com.jiubai.inteloper.widget.RippleView>
+
+            </LinearLayout>
 
         </LinearLayout>
 

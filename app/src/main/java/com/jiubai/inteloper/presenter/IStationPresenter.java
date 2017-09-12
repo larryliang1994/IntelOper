@@ -10,10 +10,9 @@ import com.jiubai.inteloper.bean.StationDevice;
 public interface IStationPresenter {
     void getStationList();
     void getStationInfo(String name);
-    void editStationInfo(Station sourceStation, Station newStation);
-    void addStation(Station station);
+    void editStationInfo(Station station, int optType);
     void getRegionList();
     void getGroupList();
-    void addDevice(StationDevice stationDevice);
-    void getDeviceList(Station station);
+    void editDeviceInfo(StationDevice stationDevice, String stationName, int optType);
+    void getDeviceList(String name);
 }

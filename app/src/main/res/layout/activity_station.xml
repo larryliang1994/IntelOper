@@ -35,39 +35,69 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView_name"
+            <LinearLayout
+                android:id="@+id/layout_editStation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingLeft="16dp"
+                android:orientation="horizontal"
                 android:layout_marginTop="16dp"
-                android:background="#ffffff"
-                android:paddingBottom="4dp"
-                android:paddingTop="12dp"
-                android:text="设备名称"
-                android:textColor="@color/mainText"
-                android:textSize="16sp" />
+                android:background="@drawable/ripple"
+                android:clickable="true">
 
-            <TextView
-                android:id="@+id/textView_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:paddingBottom="4dp"
-                android:paddingLeft="16dp"
-                android:textSize="14sp"
-                android:text="区域/班组" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView_ip"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#ffffff"
-                android:paddingBottom="12dp"
-                android:paddingLeft="16dp"
-                android:text="192.168.0.0"
-                android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/textView_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:paddingLeft="16dp"
+                        android:background="#ffffff"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="12dp"
+                        android:text="设备名称"
+                        android:textColor="@color/mainText"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/textView_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#ffffff"
+                        android:paddingBottom="4dp"
+                        android:paddingLeft="16dp"
+                        android:textSize="14sp"
+                        android:text="区域/班组" />
+
+                    <TextView
+                        android:id="@+id/textView_ip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#ffffff"
+                        android:paddingBottom="12dp"
+                        android:paddingLeft="16dp"
+                        android:text="192.168.0.0"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/right"
+                    android:layout_marginRight="12dp"
+                    android:tint="#CBCBCB" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/layout_addDevice"

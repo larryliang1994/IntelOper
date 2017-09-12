@@ -116,6 +116,8 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
                                 break;
                             }
                         }
+
+                        UtilBox.startActivity(DeviceListActivity.this, intent, false);
                         break;
 
                     case SOURCE_STATION:
@@ -127,6 +129,9 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
                                 break;
                             }
                         }
+
+                        startActivityForResult(intent, 333);
+                        overridePendingTransition(R.anim.in_right_left, R.anim.out_right_left);
                         break;
 
                     case SOURCE_LIMIT:
@@ -138,14 +143,15 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
                                 break;
                             }
                         }
+
+                        UtilBox.startActivity(DeviceListActivity.this, intent, false);
                         break;
 
                     default:
                         intent = new Intent();
+                        UtilBox.startActivity(DeviceListActivity.this, intent, false);
                         break;
                 }
-
-                UtilBox.startActivity(DeviceListActivity.this, intent, false);
 
                 mToolbar.onBackPressed();
             }
@@ -195,7 +201,7 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
             mAddStationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(DeviceListActivity.this, AddStationActivity.class);
+                    Intent intent = new Intent(DeviceListActivity.this, StationEditActivity.class);
                     DeviceListActivity.this.startActivityForResult(intent, REQUEST_CODE_NEW_DEVICE);
                 }
             });
@@ -272,56 +278,6 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
 
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public void onGetStationInfoResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onEditStationInfoResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onAddStationResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onGetRegionListResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onGetGroupListResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onGetDeviceInfoResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onEditDeviceInfoResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onAddNewDeviceResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onGetDeviceTelemetryResult(boolean result, String info, Object extras) {
-
-    }
-
-    @Override
-    public void onGetDeviceTelecommendResult(boolean result, String info, Object extras) {
-
     }
 
     @Override
@@ -469,7 +425,70 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
                     UtilBox.showLoading(this);
                 }
                 break;
+
+            case 333:
+                if (resultCode == RESULT_OK) {
+                    new StationPresenterImpl(this, this).getStationList();
+
+                    UtilBox.showLoading(this);
+                }
+                break;
         }
+    }
+
+    @Override
+    public void onGetStationInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onEditStationInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetRegionListResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetGroupListResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onEditStationDeviceResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetStationDeviceListResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetDeviceInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onEditDeviceInfoResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onAddNewDeviceResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetDeviceTelemetryResult(boolean result, String info, Object extras) {
+
+    }
+
+    @Override
+    public void onGetDeviceTelecommendResult(boolean result, String info, Object extras) {
+
     }
 }
 
