@@ -155,10 +155,10 @@ public class StationPresenterImpl implements IStationPresenter {
                             byte[] name;
                             byte[] ip;
 
-                            group  = DataTypeConverter.readBytes(msgContent, requestMsgLength + 65 * 0, 65);
-                            region = DataTypeConverter.readBytes(msgContent, requestMsgLength + 65 * 1, 65);
-                            name   = DataTypeConverter.readBytes(msgContent, requestMsgLength + 65 * 2, 65);
-                            ip     = DataTypeConverter.readBytes(msgContent, requestMsgLength + 65 * 3, 65);
+                            group  = DataTypeConverter.readBytes(msgContent, requestMsgLength * 0 + 65 * 0, 65);
+                            region = DataTypeConverter.readBytes(msgContent, requestMsgLength * 0 + 65 * 1, 65);
+                            name   = DataTypeConverter.readBytes(msgContent, requestMsgLength * 0 + 65 * 2, 65);
+                            ip     = DataTypeConverter.readBytes(msgContent, requestMsgLength * 0 + 65 * 3, 65);
 
                             int group_index = 0, region_index = 0, name_index = 0, ip_index = 0;
                             for(int j = 0; j < 65; j++) {
@@ -460,7 +460,7 @@ public class StationPresenterImpl implements IStationPresenter {
             byte[] station_offset = new byte[station.length];
 
             byte[] rtu = stationDevice.getRtu().getBytes(cs);
-            byte[] rtu_offset = new byte[65 - rtu.length];
+            byte[] rtu_offset = new byte[17 - rtu.length];
 
             // 把所有字节合并成一条
             byte[] input = DataTypeConverter.concatAll(requestCode, msgNum, opt,
@@ -522,7 +522,7 @@ public class StationPresenterImpl implements IStationPresenter {
 
             // 把所有字节合并成一条
             byte[] input = DataTypeConverter.concatAll(requestCode, msgNum, stationName, stationName_offset);
-            final int requestMsgLength = 64 * 4;
+            final int requestMsgLength = 64 * 4 + 17;
 
             RequestUtil.request(input, 9, requestMsgLength, true,
                     new RequestUtil.RequestCallback() {
@@ -542,7 +542,7 @@ public class StationPresenterImpl implements IStationPresenter {
                                 station = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 1, 64);
                                 region = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 2, 64);
                                 group = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 3, 64);
-                                rtu = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 4, 64);
+                                rtu = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 4, 17);
 
                                 int name_index = 0, station_index = 0, region_index = 0, group_index = 0, rtu_index = 0;
                                 for(int j = 0; j < 64; j++) {
@@ -580,7 +580,7 @@ public class StationPresenterImpl implements IStationPresenter {
                                     }
                                 }
 
-                                for(int j = 0; j < 64; j++) {
+                                for(int j = 0; j < 17; j++) {
                                     if (rtu[j] == 0) {
                                         rtu_index = j;
                                         break;

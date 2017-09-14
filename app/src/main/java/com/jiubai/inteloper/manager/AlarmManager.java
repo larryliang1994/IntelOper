@@ -113,6 +113,8 @@ public class AlarmManager {
 
                         decodeAlarm(opCode, msgNum);
 
+                        // TODO 判断应用是否在后台，如果是，显示N条通知，N=当前告警数量
+
                         if (guardThread == null) {
                             initGuardThread();
 
