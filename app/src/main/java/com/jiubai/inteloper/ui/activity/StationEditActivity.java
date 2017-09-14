@@ -59,8 +59,8 @@ public class StationEditActivity extends BaseActivity implements IStationView {
     private Station station;
     private int optType = -1;
 
-    private String[] regions;
-    private String[] groups;
+    private String[] regions = {};
+    private String[] groups = {};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
