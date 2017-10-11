@@ -20,6 +20,7 @@ import com.jiubai.inteloper.bean.Device;
 import com.jiubai.inteloper.bean.DeviceListDisplay;
 import com.jiubai.inteloper.bean.Station;
 import com.jiubai.inteloper.common.UtilBox;
+import com.jiubai.inteloper.config.Config;
 import com.jiubai.inteloper.presenter.DevicePresenterImpl;
 import com.jiubai.inteloper.presenter.StationPresenterImpl;
 import com.jiubai.inteloper.ui.iview.IDeviceView;
@@ -201,8 +202,21 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
             mAddStationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
                     Intent intent = new Intent(DeviceListActivity.this, StationEditActivity.class);
                     DeviceListActivity.this.startActivityForResult(intent, REQUEST_CODE_NEW_DEVICE);
+
+                    //Intent intent = new Intent(DeviceListActivity.this, StationActivity.class);
+
+                    //for (Station station : stations) {
+                    //    if (name.equals(station.getName())) {
+                    //        intent.putExtra("station", station);
+                    //        break;
+                    //    }
+                    //}
+
+                    //DeviceListActivity.this.startActivityForResult(intent, 333);
+                    //overridePendingTransition(R.anim.in_right_left, R.anim.out_right_left);
                 }
             });
 
@@ -413,6 +427,20 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(Config.STATION_ADD){
+            //重新获取 厂站列表
+            new StationPresenterImpl(this,this).getStationList();
+
+            UtilBox.showLoading(this);
+
+            Config.STATION_ADD = false;
+        }
+    }
+
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -420,19 +448,22 @@ public class DeviceListActivity extends BaseActivity implements IDeviceView, ISt
             case REQUEST_CODE_NEW_DEVICE:
             case REQUEST_CODE_EDIT_DEVICE:
                 if (resultCode == RESULT_OK) {
+                    //重新获取 设备列表
                     new DevicePresenterImpl(this, this).getDeviceList();
 
                     UtilBox.showLoading(this);
                 }
                 break;
 
-            case 333:
+            case 333://编辑和新增厂站
                 if (resultCode == RESULT_OK) {
+                    //重新获取 厂站列表
                     new StationPresenterImpl(this, this).getStationList();
 
                     UtilBox.showLoading(this);
                 }
                 break;
+
         }
     }
 

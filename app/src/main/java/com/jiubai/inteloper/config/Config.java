@@ -14,6 +14,8 @@ public class Config {
 
     public static String COOKIE = "";
 
+    public static boolean STATION_ADD = false;
+
     public static boolean IS_CONNECTED = false;
 
     public static boolean NO_NETWORK = false;

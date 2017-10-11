@@ -309,6 +309,8 @@ public class DefinitionActivity extends BaseActivity implements IDeviceView {
             }
         } else {
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
+            mNameEditText.setText(device.getName());
+            mNameEditText.setEnabled(false);
         }
     }
 

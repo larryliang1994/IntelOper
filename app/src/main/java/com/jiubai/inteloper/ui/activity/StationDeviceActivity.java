@@ -1,5 +1,7 @@
 package com.jiubai.inteloper.ui.activity;
 
+import android.content.DialogInterface;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Space;
@@ -36,9 +38,6 @@ public class StationDeviceActivity extends BaseActivity implements IStationView 
     @Bind(R.id.editText_name)
     EditText mNameEditText;
 
-    @Bind(R.id.editText_rtu)
-    EditText mRTUEditText;
-
     private String stationName = "";
     private StationDevice stationDevice = null;
 
@@ -71,7 +70,6 @@ public class StationDeviceActivity extends BaseActivity implements IStationView 
             mSpace.setVisibility(View.GONE);
         } else {
             mNameEditText.setText(stationDevice.getName());
-            mRTUEditText.setText(stationDevice.getRtu());
         }
 
         mSaveRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
@@ -80,18 +78,16 @@ public class StationDeviceActivity extends BaseActivity implements IStationView 
                 if (TextUtils.isEmpty(mNameEditText.getText().toString())) {
                     Toast.makeText(StationDeviceActivity.this, "请填写设备名称", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (TextUtils.isEmpty(mRTUEditText.getText().toString())) {
-                    Toast.makeText(StationDeviceActivity.this, "请填写设备RTU", Toast.LENGTH_SHORT).show();
-                    return;
                 }
 
                 StationDevice device = new StationDevice(
-                        mNameEditText.getText().toString(), mRTUEditText.getText().toString());
+                        mNameEditText.getText().toString());
 
                 if (stationDevice == null) {
                     optType = StationPresenterImpl.STATION_DEVICE_OPT_TYPE_ADD;
                 } else {
                     optType = StationPresenterImpl.STATION_DEVICE_OPT_TYPE_EDIT;
+                    stationName = stationDevice.getName();
                 }
 
                 UtilBox.showLoading(StationDeviceActivity.this);
@@ -106,10 +102,18 @@ public class StationDeviceActivity extends BaseActivity implements IStationView 
             public void onComplete(RippleView rippleView) {
                 optType = StationPresenterImpl.STATION_DEVICE_OPT_TYPE_DELETE;
 
-                UtilBox.showLoading(StationDeviceActivity.this);
+                UtilBox.alert(StationDeviceActivity.this, "确定要删除吗",
+                        "确定删除", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                UtilBox.showLoading(StationDeviceActivity.this);
 
-                new StationPresenterImpl(StationDeviceActivity.this, StationDeviceActivity.this)
-                        .editDeviceInfo(stationDevice, stationName, optType);
+                                new StationPresenterImpl(StationDeviceActivity.this, StationDeviceActivity.this)
+                                        .editDeviceInfo(stationDevice, stationName, optType);
+                            }
+                        },
+                        "取消", null);
+
             }
         });
     }
@@ -128,7 +132,7 @@ public class StationDeviceActivity extends BaseActivity implements IStationView 
             }
 
             StationDevice device = new StationDevice(
-                    mNameEditText.getText().toString(), mRTUEditText.getText().toString());
+                    mNameEditText.getText().toString());
 
             Intent intent = new Intent();
             intent.putExtra("stationDevice", device);

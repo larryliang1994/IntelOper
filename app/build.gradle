@@ -3,12 +3,13 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     buildToolsVersion '26.0.1'
+    useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.jiubai.inteloper"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 6
-        versionName "0.9.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -53,7 +54,6 @@ dependencies {
     })
     compile project(':PickView')
     compile files('src/main/jniLibs/pinyin4j.jar')
-    compile files('src/main/jniLibs/Volley.jar')
     compile files('src/main/jniLibs/photoview.jar')
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
@@ -69,6 +69,7 @@ dependencies {
     compile 'com.github.ittianyu:BottomNavigationViewEx:1.1.9'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
     compile 'net.gotev:uploadservice:3.2.3'
+    compile 'com.android.volley:volley:1.0.0'
     compile 'net.gotev:uploadservice-okhttp:3.2.3'
     testCompile 'junit:junit:4.12'
 }

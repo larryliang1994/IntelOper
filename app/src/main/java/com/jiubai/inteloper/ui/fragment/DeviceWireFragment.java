@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +16,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.jiubai.inteloper.R;
 import com.jiubai.inteloper.bean.Device;
 import com.jiubai.inteloper.common.UtilBox;
 import com.jiubai.inteloper.config.Constants;
 import com.jiubai.inteloper.net.UploadUtil;
-import com.jiubai.inteloper.net.VolleyUtil;
 import com.jiubai.inteloper.ui.activity.CheckPictureActivity;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -30,11 +28,25 @@ import net.gotev.uploadservice.ServerResponse;
 import net.gotev.uploadservice.UploadInfo;
 import net.gotev.uploadservice.UploadStatusDelegate;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -99,41 +111,62 @@ public class DeviceWireFragment extends Fragment {
     }
 
     private void setupImage() {
-        String[] key = {"device_name"};
-        String[] value = {device.getName()};
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String serverURL = "http://dyjk.jiubaiwang.cn?_url=upload/getImageInfo";
 
-        VolleyUtil.request("http://dyjk.jiubaiwang.cn?_url=upload/getImageInfo", key, value,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONObject jsonObject = new JSONObject(response);
+                    URL url = new URL(serverURL);
+                    Log.i(Constants.TAG, url + "");
+                    HttpPost method = new HttpPost(new URI(serverURL));
+                    List<NameValuePair> nvps = new ArrayList<>();
+                    nvps.add(new BasicNameValuePair("device_name", device.getName()));
+                    method.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+                    HttpClient client = new DefaultHttpClient();
+                    client.getParams().setParameter("http.protocol.content-charset", HTTP.UTF_8);
+                    HttpGet request = new HttpGet();
+                    request.setURI(new URI(serverURL));
+                    HttpResponse response = client.execute(method);
+                    int responseCode = response.getStatusLine().getStatusCode();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+                    StringBuilder builder = new StringBuilder();
+                    for (String line = null; (line = reader.readLine()) != null; ) {
+                        builder.append(line);
+                    }
 
-                            String result = jsonObject.getString("code");
+                    JSONObject jsonObject = new JSONObject(builder.toString());
 
-                            if (Constants.SUCCESS.equals(result)) {
-                                imageUrl = jsonObject.getJSONObject("data").getString("full_img_url");
+                    String result = jsonObject.getString("code");
 
+                    if (Constants.SUCCESS.equals(result)) {
+                        imageUrl = jsonObject.getJSONObject("data").getString("full_img_url");
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
                                 ImageLoader.getInstance().displayImage(imageUrl, imageView);
 
                                 mAddPictureButton.setText("修改接线图");
-                            } else {
+                            }
+                        });
+
+                    } else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
                                 mAddPictureButton.setText("+上传接线图");
                             }
+                        });
+                    }
 
-                            UtilBox.dismissLoading();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            Toast.makeText(getActivity(), "上传接线图数据源出错，请重试", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        mAddPictureButton.setText("+上传接线图");
-                    }
-                });
+                    UtilBox.dismissLoading();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "获取接线图出错", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
     }
 
     @OnClick({R.id.button_addPicture})

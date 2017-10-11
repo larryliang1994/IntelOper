@@ -26,8 +26,8 @@ public class Station implements Serializable {
     public Station(String name, String region, String group, String ip) {
         this.name = name;
         this.region = region;
-        this.group = group;
         this.ip = ip;
+        this.group = group;
     }
 
     public Station(String name, String region, String group, String ip, ArrayList<StationDevice> devices) {

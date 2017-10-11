@@ -121,8 +121,8 @@ public class DevicePresenterImpl implements IDevicePresenter {
         } else {
             final List<Device> list = new ArrayList<>();
 
-            list.add(new Device("12", "加内特", "某区某责任段"));
-            list.add(new Device("12", "韦德", "某区某责任段"));
+            list.add(new Device("12", "加内特11", "某区某责任段"));
+            list.add(new Device("12", "韦德33", "某区某责任段"));
             list.add(new Device("12", "詹姆斯", "某区某责任段"));
             list.add(new Device("12", "安东尼", "某区某责任段"));
             list.add(new Device("12", "科比", "某区某责任段"));
@@ -218,7 +218,7 @@ public class DevicePresenterImpl implements IDevicePresenter {
                         mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mIDeviceView.onGetDeviceInfoResult(false, "获取设备属性失败", exception);
+                                mIDeviceView.onGetDeviceInfoResult(false, "设备属性不存在", exception);
                             }
                         });
                     }

@@ -41,17 +41,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:text="设备名称"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="0dp"
             android:textColor="@color/mainText"
             android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/textView_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textSize="14sp"
-            android:text="2017-12-28 12:52" />
+        <!--<TextView-->
+            <!--android:id="@+id/textView_desc"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="2dp"-->
+            <!--android:textSize="14sp"-->
+            <!--android:text="2017-12-28 12:52" />-->
 
     </LinearLayout>
 

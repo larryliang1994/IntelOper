@@ -2,6 +2,7 @@ package com.jiubai.inteloper.presenter;
 
 import android.app.Activity;
 import android.os.Handler;
+import android.text.TextUtils;
 
 import com.jiubai.inteloper.bean.Station;
 import com.jiubai.inteloper.bean.StationDevice;
@@ -234,6 +235,19 @@ public class StationPresenterImpl implements IStationPresenter {
             byte[] requestCode = DataTypeConverter.int2byte(25); // 操作码
             byte[] msgNum = DataTypeConverter.int2byte(1); // 消息数
 
+            //20170926+
+            if(TextUtils.isEmpty(station.getGroup()) || TextUtils.isEmpty(station.getRegion()) || TextUtils.isEmpty(station.getName()) || TextUtils.isEmpty(station.getIp())){
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mIStationView.onEditStationInfoResult(false, "厂站信息为空", "");
+                    }
+                    //mIStationView.onEditStationInfoResult(false, "厂站信息为空", "");
+                });
+                return;
+            }
+
+
             Charset cs = Charset.forName("GBK");
             byte[] opt = DataTypeConverter.int2byte(optType);
             byte[] group = station.getGroup().getBytes(cs);
@@ -457,15 +471,12 @@ public class StationPresenterImpl implements IStationPresenter {
             byte[] name_offset = new byte[65 - name.length];
 
             byte[] station = stationName.getBytes(cs);
-            byte[] station_offset = new byte[station.length];
-
-            byte[] rtu = stationDevice.getRtu().getBytes(cs);
-            byte[] rtu_offset = new byte[17 - rtu.length];
+            byte[] station_offset = new byte[65 - station.length];
 
             // 把所有字节合并成一条
             byte[] input = DataTypeConverter.concatAll(requestCode, msgNum, opt,
-                    name, name_offset, station, station_offset, rtu, rtu_offset);
-            final int requestMsgLength = 4;
+                    name, name_offset, station, station_offset);
+            final int requestMsgLength = 3;
 
             RequestUtil.request(input, 13, requestMsgLength, false,
                     new RequestUtil.RequestCallback() {
@@ -522,7 +533,7 @@ public class StationPresenterImpl implements IStationPresenter {
 
             // 把所有字节合并成一条
             byte[] input = DataTypeConverter.concatAll(requestCode, msgNum, stationName, stationName_offset);
-            final int requestMsgLength = 64 * 4 + 17;
+            final int requestMsgLength = 64 * 4;
 
             RequestUtil.request(input, 9, requestMsgLength, true,
                     new RequestUtil.RequestCallback() {
@@ -534,7 +545,6 @@ public class StationPresenterImpl implements IStationPresenter {
                             byte[] station;
                             byte[] region;
                             byte[] group;
-                            byte[] rtu;
 
                             for (int i = 0; i < msgNum; i++) {
 
@@ -542,9 +552,8 @@ public class StationPresenterImpl implements IStationPresenter {
                                 station = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 1, 64);
                                 region = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 2, 64);
                                 group = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 3, 64);
-                                rtu = DataTypeConverter.readBytes(msgContent, i * requestMsgLength + 64 * 4, 17);
 
-                                int name_index = 0, station_index = 0, region_index = 0, group_index = 0, rtu_index = 0;
+                                int name_index = 0, station_index = 0, region_index = 0, group_index = 0;
                                 for(int j = 0; j < 64; j++) {
                                     if (name[j] == 0) {
                                         name_index = j;
@@ -580,18 +589,11 @@ public class StationPresenterImpl implements IStationPresenter {
                                     }
                                 }
 
-                                for(int j = 0; j < 17; j++) {
-                                    if (rtu[j] == 0) {
-                                        rtu_index = j;
-                                        break;
-                                    }
-                                }
 
                                 Charset charset = Charset.forName("GBK");
 
                                 StationDevice stationDevice = new StationDevice(
-                                        new String(DataTypeConverter.readBytes(name, 0, name_index), charset),
-                                        new String(DataTypeConverter.readBytes(rtu, 0, rtu_index), charset)
+                                        new String(DataTypeConverter.readBytes(name, 0, name_index), charset)
                                 );
 
                                 deviceList.add(stationDevice);
@@ -618,21 +620,22 @@ public class StationPresenterImpl implements IStationPresenter {
         } else {
             final List<StationDevice> list = new ArrayList<>();
 
-            list.add(new StationDevice("加内特", "RTU"));
-            list.add(new StationDevice("韦德", "RTU"));
-            list.add(new StationDevice("詹姆斯", "RTU"));
-            list.add(new StationDevice("安东尼", "RTU"));
-            list.add(new StationDevice("科比", "RTU"));
-            list.add(new StationDevice("乔丹", "RTU"));
-            list.add(new StationDevice("奥尼尔", "RTU"));
-            list.add(new StationDevice("麦格雷迪", "RTU"));
-            list.add(new StationDevice("艾弗森", "RTU"));
-            list.add(new StationDevice("哈达威", "RTU"));
-            list.add(new StationDevice("纳什", "RTU"));
-            list.add(new StationDevice("弗朗西斯", "RTU"));
-            list.add(new StationDevice("姚明", "RTU"));
-            list.add(new StationDevice("库里", "RTU"));
-            list.add(new StationDevice("邓肯", "RTU"));
+            list.add(new StationDevice("加内特cc"));
+            list.add(new StationDevice("新增测试1"));
+            list.add(new StationDevice("詹姆斯"));
+            list.add(new StationDevice("安东尼"));
+            list.add(new StationDevice("科比"));
+            list.add(new StationDevice("乔丹"));
+            list.add(new StationDevice("奥尼尔"));
+            list.add(new StationDevice("麦格雷迪"));
+            list.add(new StationDevice("艾弗森"));
+            list.add(new StationDevice("哈达威"));
+            list.add(new StationDevice("纳什"));
+            list.add(new StationDevice("弗朗西斯"));
+            list.add(new StationDevice("姚明"));
+            list.add(new StationDevice("库里"));
+            list.add(new StationDevice("邓肯"));
+
 
             new Handler().postDelayed(new Runnable() {
                 @Override

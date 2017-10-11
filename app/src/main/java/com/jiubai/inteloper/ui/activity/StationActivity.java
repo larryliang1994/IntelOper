@@ -123,7 +123,6 @@ public class StationActivity extends BaseActivity implements IStationView {
 
         if (result) {
             deviceList = (ArrayList<StationDevice>) extras;
-
             adapter = new DeviceAdapter(this, deviceList);
             mRecyclerView.setAdapter(adapter);
         } else {
@@ -135,13 +134,17 @@ public class StationActivity extends BaseActivity implements IStationView {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.layout_addDevice:
-                startActivityForResult(new Intent(this, StationDeviceActivity.class), 111);
+                Intent intent1 = new Intent(this, StationDeviceActivity.class);
+                intent1.putExtra("stationName", station.getName());
+
+                startActivityForResult(intent1, 111);
                 overridePendingTransition(R.anim.in_right_left, R.anim.out_right_left);
                 break;
 
             case R.id.layout_editStation:
                 Intent intent = new Intent(this, StationEditActivity.class);
                 intent.putExtra("station", station);
+
                 startActivityForResult(intent, 222);
                 overridePendingTransition(R.anim.in_right_left, R.anim.out_right_left);
                 break;
@@ -170,7 +173,7 @@ public class StationActivity extends BaseActivity implements IStationView {
                         deviceList.add(stationDevice);
                     } else if (optType == StationPresenterImpl.STATION_DEVICE_OPT_TYPE_EDIT) {
                         deviceList.get(editDeviceIndex).setName(stationDevice.getName());
-                        deviceList.get(editDeviceIndex).setRtu(stationDevice.getRtu());
+                        //deviceList.get(editDeviceIndex).setRtu(stationDevice.getRtu());
                     } else if (optType == StationPresenterImpl.STATION_DEVICE_OPT_TYPE_DELETE) {
                         for (int i = 0; i < deviceList.size(); i++) {
                             if (deviceList.get(i).getName().equals(stationDevice.getName())) {
@@ -201,7 +204,7 @@ public class StationActivity extends BaseActivity implements IStationView {
                     } else if (optType == StationPresenterImpl.STATION_DEVICE_OPT_TYPE_EDIT) {
                         mNameTextView.setText(station.getName());
 
-                        mDescTextView.setText(station.getRegion() + "/" + station.getGroup());
+                        //mDescTextView.setText(station.getRegion() + "/" + station.getGroup());
 
                         mIPTextView.setText(station.getIp());
 
@@ -260,18 +263,17 @@ public class StationActivity extends BaseActivity implements IStationView {
             View view = LayoutInflater.from(mContext).inflate(R.layout.item_station_device, parent, false);
             return new ContentViewHolder(view);
         }
-
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
             ContentViewHolder viewHolder = (ContentViewHolder) holder;
+
+            //station = (Station) getIntent().getSerializableExtra("station");
 
             final StationDevice stationDevice = mList.get(position);
 
             viewHolder.nameTextView.setText(stationDevice.getName());
 
-            viewHolder.descTextView.setText(stationDevice.getRtu());
-
-            viewHolder.layout.setOnClickListener(new View.OnClickListener() {
+            viewHolder.layoutContentViewHolder.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     editDeviceIndex = position;
@@ -293,13 +295,13 @@ public class StationActivity extends BaseActivity implements IStationView {
 
         public class ContentViewHolder extends RecyclerView.ViewHolder {
             @Bind(R.id.layout)
-            RelativeLayout layout;
+            RelativeLayout layoutContentViewHolder;
 
             @Bind(R.id.textView_name)
             TextView nameTextView;
 
-            @Bind(R.id.textView_desc)
-            TextView descTextView;
+            //@Bind(R.id.textView_desc)
+            //TextView descTextView;
 
             ContentViewHolder(View itemView) {
                 super(itemView);

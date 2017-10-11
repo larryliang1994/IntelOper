@@ -8,14 +8,12 @@ import java.io.Serializable;
 
 public class StationDevice implements Serializable {
     private String name;
-    private String rtu;
 
     public StationDevice() {
     }
 
-    public StationDevice(String name, String rtu) {
+    public StationDevice(String name) {
         this.name = name;
-        this.rtu = rtu;
     }
 
     public String getName() {
@@ -24,13 +22,5 @@ public class StationDevice implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getRtu() {
-        return rtu;
-    }
-
-    public void setRtu(String rtu) {
-        this.rtu = rtu;
     }
 }

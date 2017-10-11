@@ -61,9 +61,13 @@ public class VolleyUtil {
             }
         };
 
+        stringRequest.setShouldCache(false);
+
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(Constants.REQUEST_TIMEOUT, 1, 1.0f));
 
         // 加入请求队列
         requestQueue.add(stringRequest);
     }
+
+
 }

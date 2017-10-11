@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.jiubai.inteloper.R;
 import com.jiubai.inteloper.bean.Station;
 import com.jiubai.inteloper.common.UtilBox;
+import com.jiubai.inteloper.config.Config;
 import com.jiubai.inteloper.presenter.StationPresenterImpl;
 import com.jiubai.inteloper.ui.iview.IStationView;
 import com.jiubai.inteloper.widget.RippleView;
@@ -122,36 +123,57 @@ public class StationEditActivity extends BaseActivity implements IStationView {
 
                 if (station == null) {
                     optType = StationPresenterImpl.STATION_OPT_TYPE_ADD;
+                    station = new Station(
+                            mStationEditText.getText().toString(),
+                            regions[regionIndex],
+                            groups[groupIndex],
+                            mIPEditText.getText().toString()
+                    );
+
                 } else {
                     optType = StationPresenterImpl.STATION_OPT_TYPE_EDIT;
+                    //区域和班组不可改变，用第二个字段把原来的name传过去
+                    station = new Station(
+                            mStationEditText.getText().toString(),
+                            station.getName(),
+                            groups[groupIndex],
+                            mIPEditText.getText().toString()
+                    );
                 }
-
-                station = new Station(
-                        mStationEditText.getText().toString(),
-                        regions[regionIndex], groups[groupIndex],
-                        mIPEditText.getText().toString()
-                );
 
                 UtilBox.showLoading(StationEditActivity.this);
 
                 new StationPresenterImpl(StationEditActivity.this, StationEditActivity.this)
                         .editStationInfo(station, optType);
+                station = new Station(
+                        mStationEditText.getText().toString(),
+                        regions[regionIndex],
+                        groups[groupIndex],
+                        mIPEditText.getText().toString()
+                );
+
             }
         });
 
         mDeleteRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
+                UtilBox.alert(StationEditActivity.this, "确定要删除吗",
+                        "确定删除", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                UtilBox.toggleSoftInput(mStationEditText, false);
+                                UtilBox.toggleSoftInput(mIPEditText, false);
 
-                UtilBox.toggleSoftInput(mStationEditText, false);
-                UtilBox.toggleSoftInput(mIPEditText, false);
+                                UtilBox.showLoading(StationEditActivity.this);
 
-                UtilBox.showLoading(StationEditActivity.this);
+                                optType = StationPresenterImpl.STATION_OPT_TYPE_DELETE;
 
-                optType = StationPresenterImpl.STATION_OPT_TYPE_DELETE;
-
-                new StationPresenterImpl(StationEditActivity.this, StationEditActivity.this)
-                        .editStationInfo(station, optType);
+                                new StationPresenterImpl(StationEditActivity.this, StationEditActivity.this)
+                                        .editStationInfo(station, optType);
+                            }
+                        },
+                        "取消", null);
             }
         });
     }
@@ -163,24 +185,25 @@ public class StationEditActivity extends BaseActivity implements IStationView {
         if (result) {
             if (optType == StationPresenterImpl.STATION_DEVICE_OPT_TYPE_ADD) {
                 Toast.makeText(this, "添加成功", Toast.LENGTH_SHORT).show();
-
+                //如何更新场站列表20170926？
+                //setResult(RESULT_OK);
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         Intent intent = new Intent(StationEditActivity.this, StationActivity.class);
                         intent.putExtra("station", station);
 
+                        Config.STATION_ADD = true;
+
                         UtilBox.startActivity(StationEditActivity.this, intent, true);
                     }
                 }, 1000);
-
                 return;
             } else if (optType == StationPresenterImpl.STATION_DEVICE_OPT_TYPE_EDIT) {
                 Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "删除成功", Toast.LENGTH_SHORT).show();
             }
-
             Intent intent = new Intent();
             intent.putExtra("station", station);
             intent.putExtra("optType", optType);
